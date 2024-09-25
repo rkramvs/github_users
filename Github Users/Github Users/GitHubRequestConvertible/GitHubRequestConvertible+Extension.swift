@@ -6,11 +6,12 @@
 //
  
 import GitHubRequest
+import Foundation
 
 extension GitHubRequestConvertible {
     var host: String { "api.github.com" }
     
     func token() async throws -> String {
-        return ""
+        return Bundle.main.object(forInfoDictionaryKey: "Access Token") as? String ?? ""
     }
 }
