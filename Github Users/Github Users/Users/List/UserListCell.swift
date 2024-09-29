@@ -10,13 +10,13 @@ import UIKit
 
 class UserListCellContentView: UIView, UIContentView {
     
-    var listContentConfig: UserListModel
+    var listContentConfig: UserListCellContentConfiguration
     
     var configuration: UIContentConfiguration {
         get {
             return listContentConfig
         } set {
-            guard let newConfiguration = newValue as? UserListModel else {
+            guard let newConfiguration = newValue as? UserListCellContentConfiguration else {
                 return
             }
             apply(isFirst: false, configuration: newConfiguration)
@@ -26,8 +26,10 @@ class UserListCellContentView: UIView, UIContentView {
     // We will work on the implementation in a short while.
     
     var nameLabel: UILabel = UILabel()
+    var imageView: UIImageView = UIImageView(image: UIImage(systemName: "person.circle.fill"))
+    lazy var stackView = UIStackView(arrangedSubviews: [imageView, nameLabel])
     
-    init(configuration: UserListModel) {
+    init(configuration: UserListCellContentConfiguration) {
         listContentConfig = configuration
         super.init(frame: .zero)
         
@@ -48,28 +50,49 @@ class UserListCellContentView: UIView, UIContentView {
         nameLabel.font = UIFont.preferredFont(forTextStyle: .body)
         nameLabel.textColor = UIColor.label
         
-        NSLayoutConstraint.activate([nameLabel.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
-                                     nameLabel.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
-                                     nameLabel.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
-                                     nameLabel.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = UIColor.systemGray
+        imageView.layer.cornerRadius = 22
+        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.secondarySystemBackground.cgColor
+        imageView.clipsToBounds = true
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.distribution = .fillProportionally
+        stackView.spacing = 8
+        
+        addSubview(stackView)
+        
+        let bottomAnchor = stackView.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor)
+        bottomAnchor.priority = .required - 1
+        
+        NSLayoutConstraint.activate([stackView.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
+                                     stackView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
+                                     stackView.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
+                                     bottomAnchor,
+                                     imageView.widthAnchor.constraint(equalToConstant: 44),
+                                     imageView.heightAnchor.constraint(equalToConstant: 44)
                                     ])
         
-        
     }
     
-    func apply(isFirst: Bool, configuration: UserListModel) {
+    func apply(isFirst: Bool, configuration: UserListCellContentConfiguration) {
         
-        guard listContentConfig != configuration else { return }
+        guard isFirst || listContentConfig != configuration else { return }
         
         listContentConfig = configuration
-        nameLabel.text = configuration.login
+        nameLabel.text = configuration.model.login
+        if let data = configuration.model.avatarData {
+            imageView.image = UIImage(data: data)
+        }
     }
-    
 }
 
 class UserListCell: UICollectionViewListCell {
     
-    var item: UserListModel = UserListModel.default()
+    var item: UserListCellContentConfiguration = UserListCellContentConfiguration.default()
     
     override func updateConfiguration(using state: UICellConfigurationState) {
         

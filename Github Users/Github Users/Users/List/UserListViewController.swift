@@ -7,8 +7,14 @@
 
 import UIKit
 import CoreData
+import UIComponent
+import CoreData
 
 class UserListViewController: UIViewController {
+    
+    typealias UserListDataSource = UICollectionViewDiffableDataSource<Int, NSManagedObjectID>
+    private var dataSource: UserListDataSource?
+    weak var coordinatorDelegate: UserListCoordinatorDelegate?
     
     private lazy var collectionView: UICollectionView = {
         var config = UICollectionLayoutListConfiguration(appearance: .plain)
@@ -18,6 +24,22 @@ class UserListViewController: UIViewController {
         collectionView.contentInset.bottom = 82
         return collectionView
     }()
+    
+    var loadingView: LoadingView?
+    var viewModel: UserListViewModel
+    
+    init(viewModel: UserListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        viewModel.delegate = self
+        viewModel.listFRC.delegate = self
+        loadingView = LoadingView(superView: self.view)
+        title = "Users"
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         super.loadView()
@@ -29,6 +51,12 @@ class UserListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        viewModel.fetchUsers()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationItem.largeTitleDisplayMode = .always
     }
     
     func setupViewHierarchy() {
@@ -50,23 +78,21 @@ class UserListViewController: UIViewController {
             guard let self else { return }
             
             let object = self.viewModel.listFRC.object(at: indexPath)
-            let model = self.viewModel.displayModel(model: object.model)
-            cell.item = model
-            
-            cell.copyButtonHandler = {[model] in
-                UIPasteboard.general.string = model.password
-                Haptic.impact(.heavy).generate()
-                #if !APP_EXTENSION
-                AnalyticsManager.shared.logEvent(event: AnalyticsEvent.CopyPassword)
-                #endif
-            }
-            
+            let model = object.listModel
+            cell.item = UserListCellContentConfiguration(model: model)
             cell.accessories = [.disclosureIndicator()]
+            
+            guard let avatarUrl =  model.avatarUrl, model.avatarData == nil else { return }
+        
+            ImageCache.publicCache.load(url: avatarUrl as NSURL, id: model.id) {id, image in
+                if let data = image?.jpegData(compressionQuality: 1.0) {
+                    let context = CoreDataHelper.shared.bgContext
+                    try? UserMObject.updateAvatarData(id: id, avatarData: data, in: context)
+                }
+            }
         }
         
-      
-        
-        dataSource = PasswordListDataSource(collectionView: collectionView) {collectionView, IndexPath, item in
+        dataSource = UserListDataSource(collectionView: collectionView) {collectionView, IndexPath, item in
             let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: IndexPath, item: item)
             return cell
         }
@@ -77,3 +103,43 @@ class UserListViewController: UIViewController {
     }
 }
 
+//MARK: - UserLisViewModelDelegate
+
+extension UserListViewController: UserLisViewModelDelegate {
+    
+}
+
+//MARK: - UICollectionViewDelegate
+extension UserListViewController: UICollectionViewDelegate {
+   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+       let user = viewModel.listFRC.object(at: indexPath).listModel
+       coordinatorDelegate?.showUserDetails(for: user)
+    }
+}
+
+//MARK: - ScrollViewDelegate
+extension UserListViewController{
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+      
+        guard offsetY > 0 else { return }
+        guard contentHeight > height else { return }
+        guard (contentHeight - offsetY) <= height else { return }
+        guard viewModel.canLoadNextPage, !viewModel.isNextPageLoading else { return }
+        loadMore()
+    }
+    
+    func loadMore(){
+        viewModel.loadNextPage()
+    }
+}
+
+//MARK: - NSFetchedResultsControllerDelegate
+extension UserListViewController: NSFetchedResultsControllerDelegate {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        let snapShot = snapshot as NSDiffableDataSourceSnapshot<Int, NSManagedObjectID>
+        dataSource?.apply(snapShot)
+    }
+}

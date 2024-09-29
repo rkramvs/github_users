@@ -7,18 +7,39 @@
 import Foundation
 import UIKit
 
-public struct UserListModel: Codable, Hashable, Equatable, UIContentConfiguration {
+public struct UserListModel: Codable, Hashable, Equatable {
+    var id: Int
     var login: String
+    var name: String?
+    var bio: String?
     var avatarUrl: URL?
-    
-    enum CodingKeys: String, CodingKey {
-        case login
-        case avatarUrl = "avatar_url"
-    }
+    var avatarData: Data?
     
     public static func == (lhs: UserListModel, rhs: UserListModel) -> Bool {
-        return lhs.login == rhs.login
+        return lhs.login == rhs.login &&
+        lhs.id == rhs.id &&
+        lhs.name == rhs.name &&
+        lhs.bio == rhs.bio &&
+        lhs.avatarUrl == rhs.avatarUrl &&
+        (lhs.avatarData == nil) == (rhs.avatarData == nil)
     }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(login)
+        hasher.combine(avatarUrl)
+        hasher.combine(name)
+        hasher.combine(bio)
+        if avatarData == nil {
+            hasher.combine(0)
+        } else {
+            hasher.combine(1)
+        }
+    }
+}
+
+struct UserListCellContentConfiguration: Hashable, Equatable, UIContentConfiguration {
+    var model: UserListModel
     
     public func makeContentView() -> UIView & UIContentView {
         UserListCellContentView(configuration: self)
@@ -29,6 +50,6 @@ public struct UserListModel: Codable, Hashable, Equatable, UIContentConfiguratio
     }
     
     static func `default`() -> Self {
-        return UserListModel(login: "", avatarUrl: nil)
+        return UserListCellContentConfiguration(model: UserListModel(id: -1, login: "", avatarUrl: nil, avatarData: nil))
     }
 }

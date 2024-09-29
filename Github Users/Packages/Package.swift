@@ -7,7 +7,8 @@ let package = Package(
     name: "Packages",
     platforms: [.iOS(.v15)],
     products: [
-        .library(name: "GitHubRequest", targets: ["APIKit", "GitHubRequest"])
+        .library(name: "GitHubRequest", targets: ["APIKit", "GitHubRequest"]),
+        .library(name: "UIComponent", targets: ["UIComponent"])
     ],
     dependencies: [
         
@@ -21,5 +22,9 @@ let package = Package(
             name: "GitHubRequest",
             dependencies: ["APIKit"],
             path: "GitHubRequest"),
+        .target(
+            name: "UIComponent",
+            dependencies: [],
+            path: "UIComponent"),
     ]
 )

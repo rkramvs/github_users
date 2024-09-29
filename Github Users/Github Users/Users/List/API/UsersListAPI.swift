@@ -11,16 +11,13 @@ import Foundation
 
 class UsersListAPI: GitHubRequestConvertible {
     
-    let perPage = 100
-    
     enum FetchType {
         case `default`, search(text: String), nextPage
     }
     
     var path: String = "users"
     var method: HttpMethod = .get
-    var page: Int = 1
-    var searchText: String?
+    var nextPageURL: URL?
     
     var fetchType: FetchType = .default
     
@@ -35,13 +32,57 @@ class UsersListAPI: GitHubRequestConvertible {
         case .search(text: let text):
             return []
         case .nextPage:
-            return [URLQueryItem(name: "page", value: String(page)), URLQueryItem(name: "per_page", value: String(perPage))]
+            return []
+        }
+    }
+    
+    var url: URL? {
+        switch fetchType {
+        case .default:
+            return constructURL()
+        case .search(text: let text):
+            return constructURL()
+        case .nextPage:
+            return nextPageURL
         }
     }
     
     func getUsers(fetchType: FetchType) async throws -> [UserListModel] {
         self.fetchType = fetchType
-        let users = try await APIKit.request(self, session: URLSession.shared, responseType: [UserListModel].self)
-        return users
+        let response = try await APIKit.fetchDataWithResponse(self, session: URLSession.shared)
+        getNextPageURL(from: response.httpResponse)
+        let model = try JSONDecoder().decode([UserListModel].self, from: response.data)
+        return model
     }
+    
+    private func getNextPageURL(from response: HTTPURLResponse) {
+        if let linkHeader = response.allHeaderFields["Link"] as? String {
+            // Split the header into parts
+            let links = linkHeader.components(separatedBy: ",")
+            
+            // Iterate over each link
+            var nextPageLinkFound: Bool = false
+            for link in links {
+                // Check if the current part contains the "rel=next" relation
+                if link.contains("rel=\"next\"") {
+                    // Extract the URL part from the link
+                    let parts = link.components(separatedBy: ";")
+                    if let urlPart = parts.first {
+                        // Clean up the URL by removing < and >
+                        let trimmedURL = urlPart.trimmingCharacters(in: CharacterSet(charactersIn: " <>"))
+                        nextPageURL = URL(string: trimmedURL)
+                        nextPageLinkFound =  true
+                    }
+                }
+            }
+            
+            if !nextPageLinkFound {
+                nextPageURL = nil
+            }
+        }
+        else {
+            nextPageURL = nil
+        }
+    }
+
 }

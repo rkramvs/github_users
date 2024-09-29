@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F5C2D0662CA3FEF100F812E9 /* GitHubRequest in Frameworks */ = {isa = PBXBuildFile; productRef = F5C2D0652CA3FEF100F812E9 /* GitHubRequest */; };
+		F5C2D0E52CA4170D00F812E9 /* UIComponent in Frameworks */ = {isa = PBXBuildFile; productRef = F5C2D0E42CA4170D00F812E9 /* UIComponent */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5C2D0E52CA4170D00F812E9 /* UIComponent in Frameworks */,
 				F5C2D0662CA3FEF100F812E9 /* GitHubRequest in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -139,6 +141,7 @@
 			name = "Github Users";
 			packageProductDependencies = (
 				F5C2D0652CA3FEF100F812E9 /* GitHubRequest */,
+				F5C2D0E42CA4170D00F812E9 /* UIComponent */,
 			);
 			productName = "Github Users";
 			productReference = F5C2D0032CA3F1C600F812E9 /* Github Users.app */;
@@ -308,7 +311,7 @@
 				DEVELOPMENT_TEAM = QJ8GZ4R6AG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Github Users/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "GitHub Users";
+				INFOPLIST_KEY_CFBundleDisplayName = GitPeek;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -344,7 +347,7 @@
 				DEVELOPMENT_TEAM = QJ8GZ4R6AG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Github Users/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "GitHub Users";
+				INFOPLIST_KEY_CFBundleDisplayName = GitPeek;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -622,6 +625,10 @@
 		F5C2D0652CA3FEF100F812E9 /* GitHubRequest */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GitHubRequest;
+		};
+		F5C2D0E42CA4170D00F812E9 /* UIComponent */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UIComponent;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

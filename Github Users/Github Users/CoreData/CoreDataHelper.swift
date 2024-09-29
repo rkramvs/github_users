@@ -14,7 +14,7 @@ class CoreDataHelper  {
     
     // MARK: - Core Data stack
     
-    private lazy var persistentContainer = NSPersistentContainer(name: "Hithub_Users")
+    private lazy var persistentContainer = NSPersistentContainer(name: "Github_Users")
     
     var mainContext: NSManagedObjectContext {
         let context = persistentContainer.viewContext
@@ -22,9 +22,18 @@ class CoreDataHelper  {
         return context
     }
     
+    lazy var bgContext: NSManagedObjectContext  =  {
+        let context = persistentContainer.newBackgroundContext()
+        context.automaticallyMergesChangesFromParent = true
+        return context
+    }()
+    
     @Published var isPersistentStoreGetLoaded: Bool = false
     func loadContainer(completion: @escaping (Error?) -> ()) {
-        
+        guard !isPersistentStoreGetLoaded else {
+            completion(nil)
+            return
+        }
         /*
          The persistent container for the application. This implementation
          creates and returns a container, having loaded the store for the

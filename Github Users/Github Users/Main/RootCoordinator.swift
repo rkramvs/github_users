@@ -11,15 +11,14 @@ import UIKit
 public class RootCoordinator {
     
     private var window: UIWindow?
+    var userCoordinator: UserCoordinator?
 
     public init(window: UIWindow?) {
         self.window = window
     }
     
     func start() {
-        let navigationController = UINavigationController()
-        navigationController.viewControllers = [UserListViewController()]
-        window?.rootViewController = navigationController
-        window!.makeKeyAndVisible()
+        userCoordinator = UserCoordinator(window: window)
+        userCoordinator?.showList()
     }
 }
