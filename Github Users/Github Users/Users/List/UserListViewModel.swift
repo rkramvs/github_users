@@ -9,8 +9,7 @@ import Foundation
 import CoreData
 import UIComponent
 
-protocol UserLisViewModelDelegate: LoadingViewModelDelegate, AlertViewModelDelegate {
-}
+protocol UserLisViewModelDelegate: LoadingViewModelDelegate, AlertViewModelDelegate { }
 
 class UserListViewModel {
     var listAPI = UsersListAPI(fetchType: .default)
@@ -20,7 +19,7 @@ class UserListViewModel {
     var isNextPageLoading: Bool = false
     
     var canLoadNextPage: Bool {
-        return listAPI.nextPageURL != nil
+        return listAPI.hasMorePage
     }
     
     @MainActor
@@ -33,6 +32,7 @@ class UserListViewModel {
                 let context = CoreDataHelper.shared.mainContext
                 try context.batchDelete(fetchRequest: UserMObject.fetchRequest<NSFetchRequestResult>(), mergeTo: [context])
                 try updateUsersInDB(users: users, using: context)
+                try context.save()
                 delegate?.loadingView?.hideLoading()
                 isRequestInProgress = false
             }catch {
@@ -52,6 +52,7 @@ class UserListViewModel {
                 let users = try await self.listAPI.getUsers(fetchType: .nextPage)
                 let context = CoreDataHelper.shared.mainContext
                 try updateUsersInDB(users: users, using: context)
+                try context.save()
                 isNextPageLoading = false
                 isRequestInProgress = false
             }catch {

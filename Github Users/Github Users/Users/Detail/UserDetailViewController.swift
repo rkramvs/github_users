@@ -43,6 +43,7 @@ class UserDetailViewController: UIViewController {
                 return section
             case .repository:
                 var config = UICollectionLayoutListConfiguration(appearance: .plain)
+                config.headerMode = .supplementary
                 let section = NSCollectionLayoutSection.list(using: config, layoutEnvironment: environment)
                 return section
             }
@@ -98,17 +99,25 @@ class UserDetailViewController: UIViewController {
             cell.item = UserProfileCellContentConfiguration(model: item)
             
             guard let avatarUrl = item.avatarUrl, item.avatarData == nil else { return }
-        
-            ImageCache.publicCache.load(url: avatarUrl as NSURL, id: item.id) {id, image in
+
+            ImageCache.publicCache.load(url: avatarUrl as NSURL, key: item.login) {login, image in
                 if let data = image?.jpegData(compressionQuality: 1.0) {
                     let context = CoreDataHelper.shared.bgContext
-                    try? UserMObject.updateAvatarData(id: id, avatarData: data, in: context)
+                    try? UserMObject.updateAvatarData(login: login, avatarData: data, in: context)
                 }
             }
         }
         
         let userDetailCellRegistration = UICollectionView.CellRegistration<UserDetailLabelCell, UserDetailDisplayModel> {(cell, indexPath, item) in
             cell.item = item
+        }
+        
+        let headerRegistration = UICollectionView.SupplementaryRegistration<UICollectionViewListCell>(elementKind: UICollectionView.elementKindSectionHeader) {[weak self] header, elementKind, indexPath in
+            guard let self else { return }
+            
+            var defaultConfig = header.defaultContentConfiguration()
+            defaultConfig.text = self.viewModel.sections[indexPath.section].title
+            header.contentConfiguration = defaultConfig
         }
         
         dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) {collectionView, IndexPath, item in
@@ -139,6 +148,21 @@ class UserDetailViewController: UIViewController {
                 return cell
             }
            
+        }
+        
+        dataSource?.supplementaryViewProvider = {[weak self] collectionView, elementKind, indexPath in
+            guard let self else { return nil }
+            if elementKind == UICollectionView.elementKindSectionHeader {
+                let section = self.viewModel.sections[indexPath.section]
+                switch section.type {
+                case .repository:
+                    let header = collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+                    return header
+                default:
+                    return nil
+                }
+            }
+            return nil
         }
         
         collectionView.dataSource = dataSource

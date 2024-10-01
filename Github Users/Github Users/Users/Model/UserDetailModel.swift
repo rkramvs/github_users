@@ -8,7 +8,6 @@
 import Foundation
 
 class UserDetailModel: Decodable {
-    var id: Int = 0
     var login: String = ""
     var name: String?
     var avatarUrl: URL?
@@ -21,10 +20,17 @@ class UserDetailModel: Decodable {
     var location: String?
     var email: String?
     var twitterUsername: String?
+    var createdAt: Date?
     
     init() { }
     
     var listModel: UserListModel {
-        UserListModel(id: id, login: login, name: name, bio: bio, avatarUrl: avatarUrl, avatarData: avatarData)
+        var listModel = UserListModel(login: login)
+        listModel.name = name
+        listModel.bio = bio
+        listModel.avatarUrl = avatarUrl
+        listModel.avatarData = avatarData
+        listModel.createdAt = createdAt
+        return listModel
     }
 }

@@ -17,6 +17,7 @@ public protocol RequestConvertible {
     
     var url: URL? { get }
     var method: HttpMethod { get }
+    var query: String? { get }
     func request() async throws -> URLRequest
 }
 
@@ -35,6 +36,10 @@ public extension RequestConvertible {
     
     var url: URL? {
         constructURL()
+    }
+    
+    var query: String? {
+        nil
     }
     
     func constructURL() -> URL? {

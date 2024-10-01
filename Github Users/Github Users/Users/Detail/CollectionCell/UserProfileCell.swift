@@ -19,7 +19,7 @@ struct UserProfileCellContentConfiguration: Hashable, Equatable, UIContentConfig
     }
     
     static func `default`() -> Self {
-        return UserProfileCellContentConfiguration(model: UserListModel(id: -1, login: "", avatarUrl: nil, avatarData: nil))
+        return UserProfileCellContentConfiguration(model: UserListModel(login: ""))
     }
 }
 
@@ -86,7 +86,7 @@ class UserProfileCellContentView: UIView, UIContentView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = UIColor.systemGray
-        imageView.layer.cornerRadius = 22
+        imageView.layer.cornerRadius = 35
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.secondarySystemBackground.cgColor
         imageView.clipsToBounds = true
@@ -112,8 +112,8 @@ class UserProfileCellContentView: UIView, UIContentView {
                                      verticalStackView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
                                      verticalStackView.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
                                      bottomAnchor,
-                                     imageView.widthAnchor.constraint(equalToConstant: 44),
-                                     imageView.heightAnchor.constraint(equalToConstant: 44)
+                                     imageView.widthAnchor.constraint(equalToConstant: 70),
+                                     imageView.heightAnchor.constraint(equalToConstant: 70)
                                     ])
         
     }

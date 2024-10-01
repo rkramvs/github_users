@@ -26,8 +26,11 @@ class UserListCellContentView: UIView, UIContentView {
     // We will work on the implementation in a short while.
     
     var nameLabel: UILabel = UILabel()
+    var loginLabel: UILabel = UILabel()
+    var bioLabel: UILabel = UILabel()
+    lazy var labelStackView: UIStackView = UIStackView(arrangedSubviews: [nameLabel, loginLabel, bioLabel])
     var imageView: UIImageView = UIImageView(image: UIImage(systemName: "person.circle.fill"))
-    lazy var stackView = UIStackView(arrangedSubviews: [imageView, nameLabel])
+    lazy var stackView = UIStackView(arrangedSubviews: [imageView, labelStackView])
     
     init(configuration: UserListCellContentConfiguration) {
         listContentConfig = configuration
@@ -47,20 +50,38 @@ class UserListCellContentView: UIView, UIContentView {
         layoutMargins.bottom = 12
         
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        nameLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         nameLabel.textColor = UIColor.label
+        nameLabel.numberOfLines = 0
+        
+        loginLabel.translatesAutoresizingMaskIntoConstraints = false
+        loginLabel.font = UIFont.preferredFont(forTextStyle: .callout)
+        loginLabel.textColor = UIColor.secondaryLabel
+        loginLabel.numberOfLines = 0
+        
+        bioLabel.translatesAutoresizingMaskIntoConstraints = false
+        bioLabel.font = UIFont.preferredFont(forTextStyle: .callout)
+        bioLabel.textColor = UIColor.label
+        bioLabel.numberOfLines = 0
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = UIColor.systemGray
-        imageView.layer.cornerRadius = 22
+        imageView.layer.cornerRadius = 25
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.secondarySystemBackground.cgColor
         imageView.clipsToBounds = true
         
+        labelStackView.translatesAutoresizingMaskIntoConstraints = false
+        labelStackView.axis = .vertical
+        labelStackView.alignment = .leading
+        labelStackView.distribution = .fill
+        labelStackView.spacing = 4
+        
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.distribution = .fillProportionally
+        stackView.alignment = .top
         stackView.spacing = 8
         
         addSubview(stackView)
@@ -72,8 +93,8 @@ class UserListCellContentView: UIView, UIContentView {
                                      stackView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
                                      stackView.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
                                      bottomAnchor,
-                                     imageView.widthAnchor.constraint(equalToConstant: 44),
-                                     imageView.heightAnchor.constraint(equalToConstant: 44)
+                                     imageView.widthAnchor.constraint(equalToConstant: 50),
+                                     imageView.heightAnchor.constraint(equalToConstant: 50)
                                     ])
         
     }
@@ -83,7 +104,11 @@ class UserListCellContentView: UIView, UIContentView {
         guard isFirst || listContentConfig != configuration else { return }
         
         listContentConfig = configuration
-        nameLabel.text = configuration.model.login
+        nameLabel.text = configuration.model.name
+        nameLabel.isHidden = configuration.model.name == nil
+        loginLabel.text = configuration.model.login
+        bioLabel.text = configuration.model.bio?.trimmingCharacters(in: CharacterSet.newlines)
+        bioLabel.isHidden = configuration.model.bio == nil
         if let data = configuration.model.avatarData {
             imageView.image = UIImage(data: data)
         }

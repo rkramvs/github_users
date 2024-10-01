@@ -12,7 +12,8 @@ public protocol AlertViewModelDelegate: AnyObject {
 }
 
 public extension AlertViewModelDelegate where Self: UIViewController {
-    @MainActor func showError(error: Error) {
+    @MainActor
+    func showError(error: Error) {
         let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)

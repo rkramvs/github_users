@@ -82,12 +82,15 @@ class UserListViewController: UIViewController {
             cell.item = UserListCellContentConfiguration(model: model)
             cell.accessories = [.disclosureIndicator()]
             
-            guard let avatarUrl =  model.avatarUrl, model.avatarData == nil else { return }
+            guard let avatarUrl = model.avatarUrl, model.avatarData == nil else { return }
         
-            ImageCache.publicCache.load(url: avatarUrl as NSURL, id: model.id) {id, image in
+            ImageCache.publicCache.load(url: avatarUrl as NSURL, key: model.login) {login, image in
                 if let data = image?.jpegData(compressionQuality: 1.0) {
                     let context = CoreDataHelper.shared.bgContext
-                    try? UserMObject.updateAvatarData(id: id, avatarData: data, in: context)
+                    context.perform {
+                        try? UserMObject.updateAvatarData(login: login, avatarData: data, in: context)
+                    }
+                   
                 }
             }
         }

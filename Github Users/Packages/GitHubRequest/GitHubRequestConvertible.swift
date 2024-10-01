@@ -20,6 +20,10 @@ public extension GitHubRequestConvertible {
         request.httpMethod = method.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+        if let query = query {
+            let body = ["query": query]
+            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        }
         return request
     }
 }

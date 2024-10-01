@@ -3,9 +3,11 @@
     <entity name="Users" representedClassName=".UserMObject" syncable="YES">
         <attribute name="avatarData" optional="YES" attributeType="Binary" storedInTruthFile="YES"/>
         <attribute name="avatarUrl" optional="YES" attributeType="URI"/>
-        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="bio" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="login" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="URI"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="login"/>

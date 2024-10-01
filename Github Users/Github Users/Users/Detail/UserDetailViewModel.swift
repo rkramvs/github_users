@@ -24,6 +24,8 @@ class UserDetailViewModel {
     weak var delegate: UserDetailViewModelDelegate?
     var isRequestInProgress: Bool = false
     
+    var isRepositoryFetchingInProgress: Bool = false
+    
     var user: UserListModel
     var userDetailModel = UserDetailModel()
     
@@ -32,6 +34,15 @@ class UserDetailViewModel {
         
         initiateTableSectionConstructor()
         computeTableSections()
+    }
+    
+    
+    var followingsFormatted: String {
+        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.following))) following"
+    }
+    
+    var followersFormatted: String {
+        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.followers))) followers"
     }
     
     @MainActor
@@ -83,6 +94,7 @@ extension UserDetailViewModel {
         }
         
         var type: SectionType
+        var title: String?
         var items: [Item] = []
     }
     
@@ -96,10 +108,11 @@ extension UserDetailViewModel {
     func initiateTableSectionConstructor() {
         sectionConstructor[.userProfile] = profileSection
         sectionConstructor[.userDetails] = userDetailSection
+        sectionConstructor[.repository] = repositoriesSection
     }
     
     var profileSection: SectionComputationHandler { {
-            return [Section(type: .userProfile, items: [.userProfile])]
+            return [Section(type: .userProfile, title: nil, items: [.userProfile])]
         }
     }
     
@@ -139,15 +152,12 @@ extension UserDetailViewModel {
             return []
         }
         
-        return [Section(type: .userDetails, items: items)]
+        return [Section(type: .userDetails, title: nil, items: items)]
     }
     }
     
-    var followingsFormatted: String {
-        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.following))) following"
+    var repositoriesSection: SectionComputationHandler { {[unowned self] in
+        return [Section(type: .repository, title: "Repository", items: [])]
     }
-    
-    var followersFormatted: String {
-        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.followers))) followers"
     }
 }

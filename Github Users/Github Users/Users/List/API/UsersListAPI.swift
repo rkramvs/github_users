@@ -15,9 +15,11 @@ class UsersListAPI: GitHubRequestConvertible {
         case `default`, search(text: String), nextPage
     }
     
-    var path: String = "users"
-    var method: HttpMethod = .get
-    var nextPageURL: URL?
+    var path: String = "graphql"
+    var method: HttpMethod = .post
+    
+    var hasMorePage: Bool = false
+    var endCursor: String?
     
     var fetchType: FetchType = .default
     
@@ -29,7 +31,7 @@ class UsersListAPI: GitHubRequestConvertible {
         switch fetchType {
         case .default:
             return []
-        case .search(text: let text):
+        case .search(text: _):
             return []
         case .nextPage:
             return []
@@ -37,52 +39,112 @@ class UsersListAPI: GitHubRequestConvertible {
     }
     
     var url: URL? {
+        constructURL()
+    }
+        
+    var query: String? {
         switch fetchType {
-        case .default:
-            return constructURL()
-        case .search(text: let text):
-            return constructURL()
-        case .nextPage:
-            return nextPageURL
+        case .search(let text):
+                    """
+                    {
+                      search(query: "\(text) in:login \(text) in:name", type: USER, first: 20) {
+                        edges {
+                          node {
+                            ... on User {
+                              login
+                              name
+                              bio
+                              url
+                              avatarUrl
+                              createdAt
+                            }
+                          }
+                        }
+                        pageInfo {
+                          endCursor
+                          hasNextPage
+                        }
+                      }
+                    }
+                    """
+        default:
+                    """
+                    {
+                      search(query: "type:user", type: USER, first: 50, after: "\(endCursor ?? "")") {
+                        edges {
+                          node {
+                            ... on User {
+                              login
+                              name
+                              bio
+                              url
+                              avatarUrl
+                              createdAt
+                            }
+                          }
+                        }
+                        pageInfo {
+                          endCursor
+                          hasNextPage
+                        }
+                      }
+                    }
+                    """
         }
     }
     
     func getUsers(fetchType: FetchType) async throws -> [UserListModel] {
         self.fetchType = fetchType
         let response = try await APIKit.fetchDataWithResponse(self, session: URLSession.shared)
-        getNextPageURL(from: response.httpResponse)
-        let model = try JSONDecoder().decode([UserListModel].self, from: response.data)
-        return model
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
+        let model = try decoder.decode(GitHubSearchResponse.self, from: response.data)
+        
+        switch fetchType {
+        case .search(_):
+            break
+        default:
+            self.hasMorePage = model.data.search.pageInfo.hasNextPage
+            self.endCursor = model.data.search.pageInfo.endCursor
+        }
+        
+        return model.data.search.edges.compactMap { $0.node }
+    }
+}
+
+
+struct GitHubSearchResponse: Decodable {
+    let data: SearchData
+}
+
+// MARK: - Data and Search Wrapper
+struct SearchData: Decodable {
+    let search: SearchResult
+}
+
+// MARK: - Search Result Wrapper
+struct SearchResult: Decodable {
+    let edges: [Edge]
+    let pageInfo: PageInfo
+}
+
+// MARK: - Edges and Node (User Info)
+struct Edge: Decodable {
+    let node: UserListModel?
+    
+    enum CodingKeys: CodingKey {
+        case node
     }
     
-    private func getNextPageURL(from response: HTTPURLResponse) {
-        if let linkHeader = response.allHeaderFields["Link"] as? String {
-            // Split the header into parts
-            let links = linkHeader.components(separatedBy: ",")
-            
-            // Iterate over each link
-            var nextPageLinkFound: Bool = false
-            for link in links {
-                // Check if the current part contains the "rel=next" relation
-                if link.contains("rel=\"next\"") {
-                    // Extract the URL part from the link
-                    let parts = link.components(separatedBy: ";")
-                    if let urlPart = parts.first {
-                        // Clean up the URL by removing < and >
-                        let trimmedURL = urlPart.trimmingCharacters(in: CharacterSet(charactersIn: " <>"))
-                        nextPageURL = URL(string: trimmedURL)
-                        nextPageLinkFound =  true
-                    }
-                }
-            }
-            
-            if !nextPageLinkFound {
-                nextPageURL = nil
-            }
-        }
-        else {
-            nextPageURL = nil
-        }
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.node = try? container.decodeIfPresent(UserListModel.self, forKey: .node)
     }
+}
 
+// MARK: - PageInfo for Pagination
+struct PageInfo: Decodable {
+    let endCursor: String?
+    let hasNextPage: Bool
 }
