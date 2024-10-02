@@ -7,9 +7,30 @@
 
 import UIKit
 
-class UserDetailLabelCell: UICollectionViewListCell {
+struct UserDetailContentConfiguration: Hashable, Equatable, UIContentConfiguration {
+    var symbolName: String?
+    var imageName: String?
+    var title: String?
+    var attributedString: NSMutableAttributedString?
+    var isTappable: Bool = false
     
-    var item: UserDetailDisplayModel = UserDetailDisplayModel.default()
+    func makeContentView() -> any UIView & UIContentView {
+        UserDetailCellContentView(configuration: self)
+    }
+    
+    func updated(for state: any UIConfigurationState) -> UserDetailContentConfiguration {
+        self
+    }
+    
+    static func `default`() -> Self {
+        return UserDetailContentConfiguration(symbolName: nil, title: nil, attributedString: nil)
+    }
+}
+
+
+class UserDetailLabelCell: UICollectionViewCell {
+    
+    var item: UserDetailContentConfiguration = UserDetailContentConfiguration.default()
     
     override func updateConfiguration(using state: UICellConfigurationState) {
         
@@ -20,13 +41,13 @@ class UserDetailLabelCell: UICollectionViewListCell {
 }
 
 class UserDetailCellContentView: UIView, UIContentView {
-    var contentConfig: UserDetailDisplayModel
+    var contentConfig: UserDetailContentConfiguration
     
     var configuration: UIContentConfiguration {
         get {
             return contentConfig
         } set {
-            guard let newConfiguration = newValue as? UserDetailDisplayModel else {
+            guard let newConfiguration = newValue as? UserDetailContentConfiguration else {
                 return
             }
             apply(isFirst: false, configuration: newConfiguration)
@@ -39,7 +60,7 @@ class UserDetailCellContentView: UIView, UIContentView {
     var imageView: UIImageView = UIImageView(image: UIImage(systemName: "person.circle.fill"))
     lazy var imageStackView = UIStackView(arrangedSubviews: [imageView, textLabel])
     
-    init(configuration: UserDetailDisplayModel) {
+    init(configuration: UserDetailContentConfiguration) {
         contentConfig = configuration
         super.init(frame: .zero)
         
@@ -77,19 +98,30 @@ class UserDetailCellContentView: UIView, UIContentView {
         NSLayoutConstraint.activate([imageStackView.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
                                      imageStackView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
                                      imageStackView.topAnchor.constraint(equalTo: self.topAnchor),
-                                     bottomAnchor
+                                     bottomAnchor,
+                                     imageView.widthAnchor.constraint(equalToConstant: 24),
+                                     imageView.heightAnchor.constraint(equalToConstant: 24)
                                     ])
         
     }
     
-    func apply(isFirst: Bool, configuration: UserDetailDisplayModel) {
+    func apply(isFirst: Bool, configuration: UserDetailContentConfiguration) {
         
         guard isFirst || contentConfig != configuration else { return }
         
         contentConfig = configuration
         if let symbolName = configuration.symbolName {
             imageView.image = UIImage(systemName: symbolName)
+        } else if let imageName = configuration.imageName {
+            imageView.image = UIImage(named: imageName)
         }
-        textLabel.attributedText =  configuration.attributeString
+        textLabel.attributedText = configuration.attributedString
+        textLabel.text = configuration.title
+        
+        if configuration.isTappable {
+            textLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        } else {
+            textLabel.font = UIFont.systemFont(ofSize: 16)
+        }
     }
 }

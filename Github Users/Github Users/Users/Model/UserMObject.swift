@@ -36,6 +36,7 @@ class UserMObject: NSManagedObject {
         var model = UserListModel(login: login)
         model.name = name
         model.bio = bio
+        model.url = url
         model.avatarUrl = avatarUrl
         model.avatarData = avatarData
         model.createdAt = createdAt

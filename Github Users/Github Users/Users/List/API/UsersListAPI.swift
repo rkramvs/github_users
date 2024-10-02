@@ -26,17 +26,6 @@ class UsersListAPI: GitHubRequestConvertible {
     init(fetchType: FetchType) {
         self.fetchType = fetchType
     }
-
-    var params: [URLQueryItem] {
-        switch fetchType {
-        case .default:
-            return []
-        case .search(text: _):
-            return []
-        case .nextPage:
-            return []
-        }
-    }
     
     var url: URL? {
         constructURL()

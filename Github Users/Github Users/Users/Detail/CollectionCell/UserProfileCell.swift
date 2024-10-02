@@ -68,14 +68,17 @@ class UserProfileCellContentView: UIView, UIContentView {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         nameLabel.textColor = UIColor.label
+        nameLabel.numberOfLines = 0
         
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
         userNameLabel.font = UIFont.preferredFont(forTextStyle: .callout)
         userNameLabel.textColor = UIColor.secondaryLabel
+        userNameLabel.numberOfLines = 0
         
         bioLabel.translatesAutoresizingMaskIntoConstraints = false
         bioLabel.font = UIFont.preferredFont(forTextStyle: .body)
         bioLabel.textColor = UIColor.label
+        bioLabel.numberOfLines = 0
         
         nameStackView.translatesAutoresizingMaskIntoConstraints = false
         nameStackView.axis = .vertical
@@ -124,6 +127,7 @@ class UserProfileCellContentView: UIView, UIContentView {
         
         profileContentConfig = configuration
         nameLabel.text = configuration.model.name
+        nameLabel.isHidden = configuration.model.name == nil
         userNameLabel.text =  configuration.model.login
         bioLabel.text = configuration.model.bio
         bioLabel.isHidden = configuration.model.bio == nil

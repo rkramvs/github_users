@@ -43,6 +43,13 @@ class UserDetailViewController: UIViewController {
                 return section
             case .repository:
                 var config = UICollectionLayoutListConfiguration(appearance: .plain)
+                config.itemSeparatorHandler = { indexPath, configuration in
+                    var _configuration = configuration
+                    if indexPath.row == 0 {
+                        _configuration.topSeparatorVisibility = .hidden
+                    }
+                    return _configuration
+                }
                 config.headerMode = .supplementary
                 let section = NSCollectionLayoutSection.list(using: config, layoutEnvironment: environment)
                 return section
@@ -78,7 +85,10 @@ class UserDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.fetchDetails()
+        Task {
+            await viewModel.fetchDetails()
+            await viewModel.fetchRepositories()
+        }
     }
     
     func setupViewHierarchy() {
@@ -108,46 +118,72 @@ class UserDetailViewController: UIViewController {
             }
         }
         
-        let userDetailCellRegistration = UICollectionView.CellRegistration<UserDetailLabelCell, UserDetailDisplayModel> {(cell, indexPath, item) in
-            cell.item = item
+        let userDetailCellRegistration = UICollectionView.CellRegistration<UserDetailLabelCell, UserDetailViewModel.UserDetails> {(cell, indexPath, item) in
+            switch item {
+            case .blog(let url):
+                let configuration = UserDetailContentConfiguration(symbolName: "link",
+                                                                   title: url.absoluteString,
+                                                                   attributedString: nil,
+                                                                   isTappable: true)
+                cell.item = configuration
+            case .company(let company):
+                let configuration = UserDetailContentConfiguration(symbolName: "building.2",
+                                                                   title: company,
+                                                                   attributedString: nil)
+                cell.item = configuration
+            case .location(let location):
+                let configuration = UserDetailContentConfiguration(symbolName: "location",
+                                                                   title: location,
+                                                                   attributedString: nil)
+                cell.item = configuration
+            case .email(let email):
+                let configuration = UserDetailContentConfiguration(symbolName: "envelope",
+                                                                   title: email,
+                                                                   attributedString: nil,
+                                                                   isTappable: true)
+                cell.item = configuration
+            case .twitter(let twitter):
+                let configuration = UserDetailContentConfiguration(symbolName: nil,
+                                                                   imageName: "twitter",
+                                                                   title: twitter,
+                                                                   isTappable: true)
+                cell.item = configuration
+            case .followers(let followersCount, let followingsCount):
+                let configuration = UserDetailContentConfiguration(symbolName: "person.2.fill",
+                                                                   title: "\(followersCount) followers \u{00B7} \(followingsCount) followings",
+                                                                   isTappable: false)
+                cell.item = configuration
+            }
         }
         
-        let headerRegistration = UICollectionView.SupplementaryRegistration<UICollectionViewListCell>(elementKind: UICollectionView.elementKindSectionHeader) {[weak self] header, elementKind, indexPath in
+        let repositoryCellRegistration = UICollectionView.CellRegistration<RepositoryCell, RepositoryModel> {(cell, indexPath, item) in
+            cell.item = item
+            cell.accessories = [.disclosureIndicator()]
+        }
+    
+        let headerRegistration = UICollectionView.SupplementaryRegistration<RepositoryHeaderCell>(elementKind: UICollectionView.elementKindSectionHeader) {[weak self] header, elementKind, indexPath in
             guard let self else { return }
-            
-            var defaultConfig = header.defaultContentConfiguration()
-            defaultConfig.text = self.viewModel.sections[indexPath.section].title
-            header.contentConfiguration = defaultConfig
+            var config = RepositoryHeaderContentConfiguration(title: self.viewModel.sections[indexPath.section].title)
+            config.selectedFilter = viewModel.repoFilterType
+            config.handler = { [weak self] filter, button in
+                self?.viewModel.update(filter: filter)
+            }
+            header.config = config
         }
         
         dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) {collectionView, IndexPath, item in
             
             switch item {
-                
             case .userProfile:
                 let cell = collectionView.dequeueConfiguredReusableCell(using: profileCellRegistration, for: IndexPath, item: self.viewModel.userDetailModel.listModel)
                 return cell
-                
-            case .company(let model):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: userDetailCellRegistration, for: IndexPath, item: model)
+            case .userDetails(let userDetail):
+                let cell = collectionView.dequeueConfiguredReusableCell(using: userDetailCellRegistration, for: IndexPath, item: userDetail)
                 return cell
-            case .location(let model):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: userDetailCellRegistration, for: IndexPath, item: model)
-                return cell
-            case .email(let model):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: userDetailCellRegistration, for: IndexPath, item: model)
-                return cell
-            case .blog(let model):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: userDetailCellRegistration, for: IndexPath, item: model)
-                return cell
-            case .twitter(let model):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: userDetailCellRegistration, for: IndexPath, item: model)
-                return cell
-            case .followers(let model):
-                let cell = collectionView.dequeueConfiguredReusableCell(using: userDetailCellRegistration, for: IndexPath, item: model)
+            case .repository(let model):
+                let cell = collectionView.dequeueConfiguredReusableCell(using: repositoryCellRegistration, for: IndexPath, item: model)
                 return cell
             }
-           
         }
         
         dataSource?.supplementaryViewProvider = {[weak self] collectionView, elementKind, indexPath in
@@ -166,7 +202,7 @@ class UserDetailViewController: UIViewController {
         }
         
         collectionView.dataSource = dataSource
-//        collectionView.delegate = self
+        collectionView.delegate = self
     }
     
 }
@@ -184,4 +220,52 @@ extension UserDetailViewController: UserDetailViewModelDelegate {
     }
 }
 
+//MARK: - UICollectionViewDelegate
+extension UserDetailViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch viewModel.sections[indexPath.section].items[indexPath.row] {
+        case .userDetails(let userDetail):
+            switch userDetail  {
+            case .blog(let url):
+                UIApplication.shared.open(url)
+            case .email(let email):
+                if let mailToURL = URL(string: "mailto:\(email)") {
+                    UIApplication.shared.open(mailToURL)
+                }
+            case .twitter(let userName):
+                if let url = TwitterURLConstructor.url(for: userName) {
+                    UIApplication.shared.open(url)
+                }
+            default:
+                break
+            }
+            
+        case .repository(let repository):
+            if let url = repository.htmlUrl {
+                UIApplication.shared.open(url)
+            }
+        default:
+            break
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+      
+        guard offsetY > 0 else { return }
+        guard contentHeight > height else { return }
+        guard (contentHeight - offsetY) <= height else { return }
+        guard viewModel.canLoadNextPage, !viewModel.isNextPageLoading else { return }
+        loadMore()
+    }
+    
+    func loadMore(){
+        Task {
+            await viewModel.fetchNextRepositories()
+        }
+        
+    }
+}
 

@@ -64,6 +64,7 @@ class CoreDataHelper  {
         })
         persistentContainer.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
+        
     }
 
     

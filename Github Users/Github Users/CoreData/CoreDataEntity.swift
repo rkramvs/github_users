@@ -8,5 +8,5 @@
 import Foundation
 
 enum CoreDataEntity: String {
-    case users = "Users"
+    case users = "Users", languageColor = "LanguageColor"
 }

@@ -20,14 +20,21 @@ class UserDetailViewModel {
     var sections: [Section] = []
     var sectionConstructor: SectionConstructorDictType = [:]
     
-    
     weak var delegate: UserDetailViewModelDelegate?
     var isRequestInProgress: Bool = false
     
     var isRepositoryFetchingInProgress: Bool = false
     
+    lazy var repositoryAPI = RepositoryAPI(login: user.login)
     var user: UserListModel
     var userDetailModel = UserDetailModel()
+    var repositories: [RepositoryModel] = []
+    var repoFilterType: RepositoryFilterType = .nonForked
+    
+    var isNextPageLoading: Bool = false
+    var canLoadNextPage: Bool {
+        return repositoryAPI.nextPageURL != nil
+    }
     
     init(user: UserListModel) {
         self.user = user
@@ -36,40 +43,83 @@ class UserDetailViewModel {
         computeTableSections()
     }
     
-    
     var followingsFormatted: String {
-        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.following))) following"
+        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.following)))"
     }
     
     var followersFormatted: String {
-        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.followers))) followers"
+        return "\(NumberFormat.formatNumber(Double(self.userDetailModel.followers)))"
     }
     
     @MainActor
-    func fetchDetails() {
+    func fetchDetails() async {
         delegate?.loadingView?.showLoading()
         isRequestInProgress = true
-        Task {
-            do {
-                let userDetail = try await UserDetailAPI(login: user.login).getUserDetail()
-                self.userDetailModel = userDetail
-                self.userDetailModel.avatarData = self.user.avatarData
-                self.computeTableSections()
-                self.delegate?.reloadCollectionView(with: false)
-                delegate?.loadingView?.hideLoading()
-                isRequestInProgress = false
-            }catch {
-                delegate?.loadingView?.hideLoading()
-                delegate?.showError(error: error)
-                isRequestInProgress = false
-            }
+        do {
+            let userDetail = try await UserDetailAPI(login: user.login).getUserDetail()
+            self.userDetailModel = userDetail
+            self.userDetailModel.avatarData = self.user.avatarData
+            self.computeTableSections()
+            self.delegate?.reloadCollectionView(with: false)
+            delegate?.loadingView?.hideLoading()
+            isRequestInProgress = false
+        }catch {
+            delegate?.loadingView?.hideLoading()
+            delegate?.showError(error: error)
+            isRequestInProgress = false
         }
     }
+    
+    @MainActor
+    func fetchRepositories() async {
+        do {
+            repositories = try await repositoryAPI.getRepositories(fetchType: .default).filter{!$0.fork}
+            self.computeTableSections()
+            self.delegate?.reloadCollectionView(with: false)
+        }catch {
+            delegate?.loadingView?.hideLoading()
+            delegate?.showError(error: error)
+            isRequestInProgress = false
+        }
+    }
+    
+    @MainActor
+    func fetchNextRepositories() async {
+        isNextPageLoading = true
+        do {
+            let _repositories = try await repositoryAPI.getRepositories(fetchType: .nextPage).filter{!$0.fork}
+            repositories.append(contentsOf: _repositories)
+            self.computeTableSections()
+            self.delegate?.reloadCollectionView(with: false)
+            self.isNextPageLoading = false
+        }catch {
+            delegate?.loadingView?.hideLoading()
+            delegate?.showError(error: error)
+            isRequestInProgress = false
+            self.isNextPageLoading = false
+        }
+    }
+    
+    func update(filter: RepositoryFilterType) {
+        self.repoFilterType = filter
+        self.computeTableSections()
+        self.delegate?.reloadCollectionView(with: true)
+    }
+    
 }
 
 //MARK: - CollectionViewSection
 
 extension UserDetailViewModel {
+    
+    enum UserDetails: Hashable {
+        case company(String)
+        case location(String)
+        case email(String)
+        case blog(URL)
+        case twitter(String)
+        case followers(_ count: String, followingsCount: String)
+    }
     
     enum Sections: Int, CaseIterable, Equatable {
         case userProfile, userDetails, repository
@@ -80,17 +130,13 @@ extension UserDetailViewModel {
         enum SectionType: Hashable {
             case userProfile
             case userDetails
-            case repository
+            case repository(filterType: RepositoryFilterType)
         }
         
         enum Item: Hashable {
             case userProfile
-            case company(UserDetailDisplayModel),
-                 location(UserDetailDisplayModel),
-                 email(UserDetailDisplayModel),
-                 blog(UserDetailDisplayModel),
-                 twitter(UserDetailDisplayModel),
-                 followers(UserDetailDisplayModel)
+            case userDetails(UserDetails)
+            case repository(RepositoryModel)
         }
         
         var type: SectionType
@@ -121,32 +167,26 @@ extension UserDetailViewModel {
         var items: [Section.Item] = []
         
         if let company = self.userDetailModel.company {
-            items.append(.company(UserDetailDisplayModel(symbolName: "building.2",
-                                                         attributeString: NSMutableAttributedString(string: company))))
+            items.append(.userDetails(.company(company)))
         }
         
         if let location = self.userDetailModel.location {
-            items.append(.location(UserDetailDisplayModel(symbolName: "location",
-                                                          attributeString: NSMutableAttributedString(string: location))))
+            items.append(.userDetails(.location(location)))
         }
         
         if let email = self.userDetailModel.email {
-            items.append(.email(UserDetailDisplayModel(symbolName: "envelope",
-                                                          attributeString: NSMutableAttributedString(string: email))))
+            items.append(.userDetails(.email(email)))
         }
         
-        if let blog = self.userDetailModel.blog {
-            items.append(.blog(UserDetailDisplayModel(symbolName: "link",
-                                                          attributeString: NSMutableAttributedString(string: blog))))
+        if let blog = self.userDetailModel.blog, let url = URL(string: blog) {
+            items.append(.userDetails(.blog(url)))
         }
         
         if let twitter = self.userDetailModel.twitterUsername {
-            items.append(.twitter(UserDetailDisplayModel(symbolName: "link",
-                                                          attributeString: NSMutableAttributedString(string: twitter))))
+            items.append(.userDetails(.twitter(twitter)))
         }
-        
-        items.append(.followers(UserDetailDisplayModel(symbolName: "person.2.fill",
-                                                       attributeString: NSMutableAttributedString(string: "\(self.followersFormatted) \u{00B7} \(self.followingsFormatted)"))))
+
+        items.append(.userDetails(.followers(followersFormatted, followingsCount: followingsFormatted)))
         
         guard !items.isEmpty else {
             return []
@@ -157,7 +197,18 @@ extension UserDetailViewModel {
     }
     
     var repositoriesSection: SectionComputationHandler { {[unowned self] in
-        return [Section(type: .repository, title: "Repository", items: [])]
+        return [Section(type: .repository(filterType: self.repoFilterType), title: self.repoFilterType.displayText, items: self.filteredRepositories.map{.repository($0)})]
     }
+    }
+    
+    var filteredRepositories: [RepositoryModel] {
+        switch repoFilterType {
+        case .allRepositories:
+            return repositories
+        case .nonForked:
+            return repositories.filter{!$0.fork}
+        case .publicRepo:
+            return repositories.filter{!$0.private}
+        }
     }
 }

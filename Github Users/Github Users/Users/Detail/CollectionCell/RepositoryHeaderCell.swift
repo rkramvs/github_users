@@ -34,12 +34,13 @@ public struct RepositoryHeaderContentConfiguration: UIContentConfiguration, Equa
     }
     
     var title: String?
-    
+    var selectedFilter: RepositoryFilterType?
+    var handler: ((RepositoryFilterType, UIButton) -> ())?
 }
 
 class RepositoryHeaderContentView: UIContentView & UIView {
     
-    private var contentConfiguration: RepositoryHeaderContentConfiguration = RepositoryHeaderContentConfiguration()
+    private var contentConfiguration: RepositoryHeaderContentConfiguration
            
     public var configuration: UIContentConfiguration {
         get {
@@ -47,55 +48,79 @@ class RepositoryHeaderContentView: UIContentView & UIView {
         }
         set {
             if let config = newValue as? RepositoryHeaderContentConfiguration {
-//                updateConfig(config: config)
+                updateConfig(isFirst: false, config: config)
             }
         }
     }
     
     var titleLabel: UILabel = UILabel()
+    var iconView: UIImageView = UIImageView()
+    lazy var stackView: UIStackView = UIStackView(arrangedSubviews: [iconView, titleLabel])
     
-    lazy var filterButton: UIButton = UIButton(frame: .zero, primaryAction: UIAction(handler: { _ in
-//        self.contentConfiguration.handler?(self.copyButton)
-    }))
+    var filterButton: UIButton = UIButton(frame: .zero)
     
     lazy var strengthButton: UIButton = UIButton()
     
-    init(configuration: UIContentConfiguration) {
+    init(configuration: RepositoryHeaderContentConfiguration) {
+        self.contentConfiguration = configuration
         super.init(frame: .zero)
-    
-        var config = UIButton.Configuration.plain()
-        config.imagePadding = 4
-        config.image = UIImage(systemName: "ellipsis.circle")
-        filterButton.configuration = config
-        filterButton.translatesAutoresizingMaskIntoConstraints = false
-        filterButton.tintColor = .accent
         
-
-//        NSLayoutConstraint.activate([
-//            copyButton.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
-//            copyButton.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
-//            copyButton.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-//            copyButton.trailingAnchor.constraint(lessThanOrEqualTo: strengthButton.leadingAnchor, constant: 10),
-//            
-//            strengthButton.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-//            strengthButton.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
-//            strengthButton.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
-//        ])
-        self.configuration = configuration
+        backgroundColor = UIColor.systemBackground
+    
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+        titleLabel.textColor = UIColor.label
+        titleLabel.numberOfLines = 0
+        
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.tintColor = UIColor.label
+        iconView.image = UIImage(systemName: "text.book.closed.fill")
+        iconView.contentMode = .scaleAspectFit
+        iconView.preferredSymbolConfiguration = .init(textStyle: .headline, scale: .medium)
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = 8
+        
+        filterButton.translatesAutoresizingMaskIntoConstraints = false
+        filterButton.setImage(UIImage(systemName: "line.3.horizontal.decrease.circle"), for: .normal)
+        filterButton.setPreferredSymbolConfiguration(.init(textStyle: .headline, scale: .medium), forImageIn: .normal)
+        filterButton.showsMenuAsPrimaryAction = true
+        
+        addSubviews(stackView, filterButton)
+        
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            filterButton.leadingAnchor.constraint(equalTo: filterButton.trailingAnchor, constant: 16),
+            filterButton.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            filterButton.widthAnchor.constraint(equalToConstant: 44),
+            filterButton.heightAnchor.constraint(equalToConstant: 44),
+        ])
+        updateConfig(isFirst: true, config: configuration)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    func updateConfig(config: PasswordFieldDetailFooterContentConfiguration) {
-//        guard contentConfiguration != config else { return }
-//        self.contentConfiguration = config
-//        
-//        strengthButton.configuration?.title = config.strength.displayName
-//        strengthButton.tintColor = config.strength.symbolColor
-//        strengthButton.configuration?.image = UIImage(systemName: config.strength.symbolName, withConfiguration: UIImage.SymbolConfiguration(font: .footnoteRegular))
-//    }
+    func updateConfig(isFirst: Bool, config: RepositoryHeaderContentConfiguration) {
+        guard isFirst || contentConfiguration != config else { return }
+        self.contentConfiguration = config
+        self.titleLabel.text = config.title
+        var menuActions: [UIAction] = []
+        for filter in RepositoryFilterType.allCases {
+            menuActions.append(UIAction(title: filter.filterTitle, state: filter == config.selectedFilter ? .on : .off, handler: { _ in
+                self.contentConfiguration.handler?(filter, self.filterButton)
+            }))
+        }
+        
+        let menu = UIMenu(title: "Repository", children: menuActions)
+        filterButton.menu = menu
+    }
 }
 
 

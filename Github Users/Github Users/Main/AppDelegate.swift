@@ -18,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             #if DEBUG
             print("CoreDataHelper.shared.loadContainer: \(error?.localizedDescription ?? "")")
             #endif
+            LanguageColorDataHandler.update()
         }
         return true
     }

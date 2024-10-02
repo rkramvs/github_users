@@ -13,14 +13,14 @@ struct UserDetailAPI: GitHubRequestConvertible {
     
     var method: HttpMethod { .get }
     
-    let login: String
+    var login: String
     
     init(login: String) {
         self.login = login
     }
     
     var path: String {
-        "users/\(login)"
+        return "users/\(login)"
     }
     
     func getUserDetail() async throws -> UserDetailModel {
