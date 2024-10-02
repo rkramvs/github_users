@@ -159,8 +159,11 @@ class UserDetailViewController: UIViewController {
                                                                    isTappable: true)
                 cell.item = configuration
             case .followers(let followersCount, let followingsCount):
+                
+                var formattedText = "\(followersCount) \("followers".localised()) \u{00B7} \(followingsCount) \("followings".localised())"
+                
                 let configuration = UserDetailContentConfiguration(symbolName: "person.2.fill",
-                                                                   title: "\(followersCount) followers \u{00B7} \(followingsCount) followings",
+                                                                   title: formattedText,
                                                                    isTappable: false)
                 cell.item = configuration
             }
@@ -182,7 +185,7 @@ class UserDetailViewController: UIViewController {
         }
         
         let footerRegistration = UICollectionView.SupplementaryRegistration<LoadingCollectionCell>(elementKind: UICollectionView.elementKindSectionFooter) {footer, elementKind, indexPath in
-            let config = LoadingCollectionContentConfiguration(title: "Loading...")
+            let config = LoadingCollectionContentConfiguration(title: "\("Loading".localised())...")
             footer.config = config
         }
         

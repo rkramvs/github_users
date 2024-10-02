@@ -40,9 +40,7 @@ struct LanguageColorDataHandler {
             } catch {
                 print("Failed to batch insert LanguageColorMObject: \(error)")
             }
-
         }
-        
     }
 }
 

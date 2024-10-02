@@ -9,13 +9,13 @@ import Foundation
 import CoreData
 import UIComponent
 
-protocol UserLisViewModelDelegate: LoadingViewModelDelegate, AlertViewModelDelegate, NSFetchedResultsControllerDelegate {
+protocol UserListViewModelDelegate: LoadingViewModelDelegate, AlertViewModelDelegate, NSFetchedResultsControllerDelegate {
 }
 
 class UserListViewModel {
     var listAPI = UsersListAPI(fetchType: .default)
     var listFRC: NSFetchedResultsController<UserMObject> = UserMObject.getFRC(entity: .users)
-    weak var delegate: UserLisViewModelDelegate?
+    weak var delegate: UserListViewModelDelegate?
     var isRequestInProgress: Bool = false
     var isNextPageLoading: Bool = false
     var searchActive: Bool = false

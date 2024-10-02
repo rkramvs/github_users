@@ -116,7 +116,7 @@ class RepositoryHeaderContentView: UIContentView & UIView {
             }))
         }
         
-        let menu = UIMenu(title: "Repository", children: menuActions)
+        let menu = UIMenu(title: "Repository".localised(), children: menuActions)
         filterButton.menu = menu
     }
 }

@@ -37,7 +37,7 @@ class UserListViewController: UIViewController {
         viewModel.delegate = self
         viewModel.listFRC.delegate = self
         loadingView = LoadingView(superView: self.view)
-        title = "Users"
+        title = "Users".localised()
     }
     
     required init?(coder: NSCoder) {
@@ -62,7 +62,22 @@ class UserListViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationItem.largeTitleDisplayMode = .always
+        setupNavigationBar()
+    }
+    
+    private func setupNavigationBar() {
+        let languageButton = UIBarButtonItem(
+            title: "Language".localised(),
+            image: UIImage(systemName: "globe"),
+            primaryAction: UIAction(handler: { action in
+                if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    if UIApplication.shared.canOpenURL(appSettingsURL) {
+                        UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
+                    }
+                }
+            }))
+        
+        navigationItem.rightBarButtonItem = languageButton
     }
     
     func setupViewHierarchy() {
@@ -114,9 +129,9 @@ class UserListViewController: UIViewController {
     }
 }
 
-//MARK: - UserLisViewModelDelegate
+//MARK: - UserListViewModelDelegate
 
-extension UserListViewController: UserLisViewModelDelegate {
+extension UserListViewController: UserListViewModelDelegate {
 }
 
 //MARK: - UICollectionViewDelegate

@@ -14,17 +14,17 @@ enum RepositoryFilterType: String, CaseIterable {
 extension RepositoryFilterType {
     var displayText: String {
         switch self {
-        case .allRepositories: return "All Repositories"
-        case .nonForked: return "Non-Forked"
-        case .publicRepo: return "Public Repositories"
+        case .allRepositories: return "All Repositories".localised()
+        case .nonForked: return "Non-Forked".localised()
+        case .publicRepo: return "Public Repositories".localised()
         }
     }
     
     var filterTitle: String {
         switch self {
-        case .allRepositories: return "Show All"
-        case .nonForked: return "Non-Forked"
-        case .publicRepo: return "Public"
+        case .allRepositories: return "Show All".localised()
+        case .nonForked: return "Non-Forked".localised()
+        case .publicRepo: return "Public".localised()
         }
     }
 }
