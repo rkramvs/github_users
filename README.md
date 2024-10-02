@@ -1,5 +1,5 @@
 ![App Icon](https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/launchIcon.svg?alt=media&token=1da68642-53f1-428c-95d9-7612eb35c989)
-# GitHub User Browser 
+# GitHub User Browser (GitPeek)
 
 An iOS application that allows users to browse GitHub profiles and their repositories using the GitHub REST API. This app focuses on providing a user-friendly experience by showing user information and non-forked repositories.
 
@@ -70,4 +70,13 @@ To keep your GitHub Personal Access Token secure and avoid accidental exposure, 
 - **Used the `Translator` open-source Python package** to fetch and translate strings in localization files.
 - **Integrated the Python script into the Xcode build process** to ensure all user interface elements are translated with the latest updates.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A30%3A17.png?alt=media&token=365492ee-e9e0-4489-904c-3cd0aa437fa4" alt="iPhone User List" width="300" height="600">
+<img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A30%3A17.png?alt=media&token=365492ee-e9e0-4489-904c-3cd0aa437fa4" alt="iPhone User List" width="300" height="600">   <img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A39%3A49.png?alt=media&token=06bca10e-a69b-446f-a99f-d4009eb17b6a" alt="iPhone User List" width="300" height="600">
+
+#### Dark Mode
+<img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A49%3A45.png?alt=media&token=bd6b29dc-38d1-4f80-807a-56eb0ab975ad" alt="iPhone User List" width="300" height="600">
+
+#### Localisation
+<img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A56%3A44.png?alt=media&token=be4a4206-fda0-4789-870e-d05fe7a65d88" alt="iPhone User List" width="300" height="600">
+
+
+
