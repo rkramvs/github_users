@@ -37,6 +37,7 @@ public struct APIKit {
     public static func downloadData(_ requestConvertible: RequestConvertible,
                                     session: URLSession) async throws -> Data {
         let request = try await requestConvertible.request()
+        
         #if DEBUG
         print("URL: \(request.url?.absoluteString ?? "")")
         #endif

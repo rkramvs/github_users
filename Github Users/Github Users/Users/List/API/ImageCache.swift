@@ -12,7 +12,6 @@ import UIKit
 public class ImageCache {
     
     public static let publicCache = ImageCache()
-    var placeholderImage = UIImage(systemName: "rectangle")!
     private let cachedImages = NSCache<NSURL, UIImage>()
     private var loadingResponses = [NSURL: [(String, UIImage?) -> Void]]()
     

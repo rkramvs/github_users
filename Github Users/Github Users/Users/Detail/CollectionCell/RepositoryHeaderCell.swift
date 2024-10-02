@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import UIComponent
 
-class RepositoryHeaderCell: UICollectionViewListCell {
+class RepositoryHeaderCell: UICollectionViewCell {
     
     public var config: RepositoryHeaderContentConfiguration?
     
@@ -23,7 +23,7 @@ class RepositoryHeaderCell: UICollectionViewListCell {
 public struct RepositoryHeaderContentConfiguration: UIContentConfiguration, Equatable {
     
     public static func == (lhs: RepositoryHeaderContentConfiguration, rhs: RepositoryHeaderContentConfiguration) -> Bool {
-        return  lhs.title == rhs.title
+        return  lhs.title == rhs.title && lhs.selectedFilter == rhs.selectedFilter
     }
     
     public func makeContentView() -> UIView & UIContentView {
@@ -58,8 +58,6 @@ class RepositoryHeaderContentView: UIContentView & UIView {
     lazy var stackView: UIStackView = UIStackView(arrangedSubviews: [iconView, titleLabel])
     
     var filterButton: UIButton = UIButton(frame: .zero)
-    
-    lazy var strengthButton: UIButton = UIButton()
     
     init(configuration: RepositoryHeaderContentConfiguration) {
         self.contentConfiguration = configuration

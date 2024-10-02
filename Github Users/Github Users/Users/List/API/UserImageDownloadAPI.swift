@@ -13,8 +13,8 @@ class UsersImageDownloadAPI: GitHubRequestConvertible {
     
     public static var userImageSession: URLSession  = {
         let configuration = URLSessionConfiguration.default
-        configuration.requestCachePolicy = .useProtocolCachePolicy
-        configuration.urlCache = URLCache.shared
+        configuration.requestCachePolicy = .returnCacheDataElseLoad
+        configuration.urlCache = CustomExpiringURLCache.global
         return URLSession(configuration: configuration)
     }()
     
@@ -35,3 +35,4 @@ class UsersImageDownloadAPI: GitHubRequestConvertible {
         return data
     }
 }
+

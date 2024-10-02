@@ -39,10 +39,10 @@ class UserDetailViewController: UIViewController {
                     heightDimension: .estimated(44)
                 ), subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
-                section.interGroupSpacing = 10
+                section.interGroupSpacing = 0
                 return section
             case .repository:
-                var config = UICollectionLayoutListConfiguration(appearance: .plain)
+                var config = UICollectionLayoutListConfiguration(appearance: .grouped)
                 config.itemSeparatorHandler = { indexPath, configuration in
                     var _configuration = configuration
                     if indexPath.row == 0 {
@@ -51,6 +51,9 @@ class UserDetailViewController: UIViewController {
                     return _configuration
                 }
                 config.headerMode = .supplementary
+                if self.viewModel.isRepositoryFetchingInProgress {
+                    config.footerMode = .supplementary
+                }
                 let section = NSCollectionLayoutSection.list(using: config, layoutEnvironment: environment)
                 return section
             }
@@ -119,6 +122,10 @@ class UserDetailViewController: UIViewController {
         }
         
         let userDetailCellRegistration = UICollectionView.CellRegistration<UserDetailLabelCell, UserDetailViewModel.UserDetails> {(cell, indexPath, item) in
+            var bgConfig = UIBackgroundConfiguration.clear()
+            bgConfig.backgroundColor = UIColor.systemBackground
+            cell.backgroundConfiguration = bgConfig
+            
             switch item {
             case .blog(let url):
                 let configuration = UserDetailContentConfiguration(symbolName: "link",
@@ -171,8 +178,12 @@ class UserDetailViewController: UIViewController {
             header.config = config
         }
         
+        let footerRegistration = UICollectionView.SupplementaryRegistration<LoadingCollectionCell>(elementKind: UICollectionView.elementKindSectionFooter) {footer, elementKind, indexPath in
+            let config = LoadingCollectionContentConfiguration(title: "Loading...")
+            footer.config = config
+        }
+        
         dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) {collectionView, IndexPath, item in
-            
             switch item {
             case .userProfile:
                 let cell = collectionView.dequeueConfiguredReusableCell(using: profileCellRegistration, for: IndexPath, item: self.viewModel.userDetailModel.listModel)
@@ -194,6 +205,15 @@ class UserDetailViewController: UIViewController {
                 case .repository:
                     let header = collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
                     return header
+                default:
+                    return nil
+                }
+            } else if elementKind == UICollectionView.elementKindSectionFooter {
+                let section = self.viewModel.sections[indexPath.section]
+                switch section.type {
+                case .repository:
+                    let footer = collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+                    return footer
                 default:
                     return nil
                 }

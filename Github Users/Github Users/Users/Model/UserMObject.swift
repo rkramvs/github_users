@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 
 class UserMObject: NSManagedObject {
+    @NSManaged var databaseId: Int
     @NSManaged var login: String
     @NSManaged var name: String?
     @NSManaged var url: URL?
@@ -20,7 +21,7 @@ class UserMObject: NSManagedObject {
     static func getFRC() -> NSFetchedResultsController<UserMObject> {
         let context = CoreDataHelper.shared.mainContext
         let fetchRequest: NSFetchRequest<UserMObject> = UserMObject.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "\(#keyPath(UserMObject.createdAt))", ascending: true)
+        let sortDescriptor = NSSortDescriptor(key: "\(#keyPath(UserMObject.databaseId))", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         fetchRequest.resultType = .managedObjectResultType
         fetchRequest.fetchBatchSize = 25
@@ -34,6 +35,7 @@ class UserMObject: NSManagedObject {
     
     var listModel: UserListModel {
         var model = UserListModel(login: login)
+        model.databaseId = databaseId
         model.name = name
         model.bio = bio
         model.url = url
@@ -45,13 +47,13 @@ class UserMObject: NSManagedObject {
     
     static func insert(user: UserListModel, context: NSManagedObjectContext) throws {
         let newUser = UserMObject(context: context)
+        newUser.databaseId = user.databaseId
         newUser.login = user.login
         newUser.name = user.name
         newUser.url = user.url
         newUser.bio = user.bio
         newUser.avatarUrl = user.avatarUrl
         newUser.createdAt = user.createdAt
-        try context.save()
     }
     
     static func updateAvatarData(login: String, avatarData: Data?, in context: NSManagedObjectContext) throws {

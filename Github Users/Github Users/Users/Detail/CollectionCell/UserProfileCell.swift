@@ -65,6 +65,8 @@ class UserProfileCellContentView: UIView, UIContentView {
         layoutMargins.top = 12
         layoutMargins.bottom = 12
         
+        backgroundColor = UIColor.systemBackground
+        
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         nameLabel.textColor = UIColor.label

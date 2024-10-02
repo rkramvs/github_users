@@ -23,8 +23,6 @@ class UserListCellContentView: UIView, UIContentView {
         }
     }
     
-    // We will work on the implementation in a short while.
-    
     var nameLabel: UILabel = UILabel()
     var loginLabel: UILabel = UILabel()
     var bioLabel: UILabel = UILabel()
@@ -74,7 +72,7 @@ class UserListCellContentView: UIView, UIContentView {
         
         labelStackView.translatesAutoresizingMaskIntoConstraints = false
         labelStackView.axis = .vertical
-        labelStackView.alignment = .leading
+        labelStackView.alignment = .fill
         labelStackView.distribution = .fill
         labelStackView.spacing = 4
         

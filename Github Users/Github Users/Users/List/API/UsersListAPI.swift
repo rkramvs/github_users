@@ -40,6 +40,7 @@ class UsersListAPI: GitHubRequestConvertible {
                         edges {
                           node {
                             ... on User {
+                              databaseId
                               login
                               name
                               bio
@@ -63,6 +64,7 @@ class UsersListAPI: GitHubRequestConvertible {
                         edges {
                           node {
                             ... on User {
+                              databaseId
                               login
                               name
                               bio

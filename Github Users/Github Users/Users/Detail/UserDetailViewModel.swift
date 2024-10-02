@@ -72,31 +72,46 @@ class UserDetailViewModel {
     
     @MainActor
     func fetchRepositories() async {
+        self.isRepositoryFetchingInProgress =  true
+        self.computeTableSections()
+        self.delegate?.reloadCollectionView(with: false)
         do {
-            repositories = try await repositoryAPI.getRepositories(fetchType: .default).filter{!$0.fork}
+            self.repositories = try await repositoryAPI.getRepositories(fetchType: .default).filter{!$0.fork}
+            self.isRepositoryFetchingInProgress = false
             self.computeTableSections()
             self.delegate?.reloadCollectionView(with: false)
         }catch {
-            delegate?.loadingView?.hideLoading()
-            delegate?.showError(error: error)
-            isRequestInProgress = false
+            self.delegate?.loadingView?.hideLoading()
+            self.delegate?.showError(error: error)
+            self.isRequestInProgress = false
+            self.isRepositoryFetchingInProgress = false
+            self.computeTableSections()
+            self.delegate?.reloadCollectionView(with: false)
         }
     }
     
     @MainActor
     func fetchNextRepositories() async {
-        isNextPageLoading = true
+        self.isNextPageLoading = true
+        self.isRepositoryFetchingInProgress =  true
+        self.computeTableSections()
+        self.delegate?.reloadCollectionView(with: false)
         do {
             let _repositories = try await repositoryAPI.getRepositories(fetchType: .nextPage).filter{!$0.fork}
-            repositories.append(contentsOf: _repositories)
+            self.repositories.append(contentsOf: _repositories)
+            self.isNextPageLoading = false
+            self.isRepositoryFetchingInProgress =  false
             self.computeTableSections()
             self.delegate?.reloadCollectionView(with: false)
-            self.isNextPageLoading = false
+           
         }catch {
-            delegate?.loadingView?.hideLoading()
-            delegate?.showError(error: error)
-            isRequestInProgress = false
+            self.delegate?.loadingView?.hideLoading()
+            self.delegate?.showError(error: error)
+            self.isRequestInProgress = false
             self.isNextPageLoading = false
+            self.isRepositoryFetchingInProgress =  false
+            self.computeTableSections()
+            self.delegate?.reloadCollectionView(with: false)
         }
     }
     

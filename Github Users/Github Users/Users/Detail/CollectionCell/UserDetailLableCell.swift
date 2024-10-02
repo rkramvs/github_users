@@ -63,7 +63,6 @@ class UserDetailCellContentView: UIView, UIContentView {
     init(configuration: UserDetailContentConfiguration) {
         contentConfig = configuration
         super.init(frame: .zero)
-        
         setupViews()
         apply(isFirst: true, configuration: contentConfig)
     }
@@ -73,6 +72,9 @@ class UserDetailCellContentView: UIView, UIContentView {
     }
     
     func setupViews() {
+        
+        layoutMargins.top = 8
+        layoutMargins.bottom = 8
         
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         textLabel.font = UIFont.preferredFont(forTextStyle: .callout)
@@ -92,12 +94,12 @@ class UserDetailCellContentView: UIView, UIContentView {
     
         addSubview(imageStackView)
         
-        let bottomAnchor = imageStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+        let bottomAnchor = imageStackView.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor)
         bottomAnchor.priority = .required - 1
         
         NSLayoutConstraint.activate([imageStackView.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
                                      imageStackView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
-                                     imageStackView.topAnchor.constraint(equalTo: self.topAnchor),
+                                     imageStackView.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
                                      bottomAnchor,
                                      imageView.widthAnchor.constraint(equalToConstant: 24),
                                      imageView.heightAnchor.constraint(equalToConstant: 24)

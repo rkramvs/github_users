@@ -8,6 +8,7 @@ import Foundation
 import UIKit
 
 public struct UserListModel: Decodable, Hashable, Equatable {
+    var databaseId: Int = 0
     var login: String
     var name: String?
     var url: URL?
@@ -17,6 +18,7 @@ public struct UserListModel: Decodable, Hashable, Equatable {
     var createdAt: Date?
     
     enum CodingKeys: CodingKey {
+        case databaseId
         case login
         case name
         case bio
@@ -31,6 +33,7 @@ public struct UserListModel: Decodable, Hashable, Equatable {
     
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.databaseId = try container.decode(Int.self, forKey: .databaseId)
         self.login = try container.decode(String.self, forKey: .login)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.bio = try container.decodeIfPresent(String.self, forKey: .bio)
@@ -43,7 +46,8 @@ public struct UserListModel: Decodable, Hashable, Equatable {
     }
     
     public static func == (lhs: UserListModel, rhs: UserListModel) -> Bool {
-        return lhs.login == rhs.login &&
+        return lhs.databaseId == rhs.databaseId &&
+        lhs.login == rhs.login &&
         lhs.name == rhs.name &&
         lhs.bio == rhs.bio &&
         lhs.url == rhs.url &&
@@ -53,6 +57,7 @@ public struct UserListModel: Decodable, Hashable, Equatable {
     }
     
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(databaseId)
         hasher.combine(login)
         hasher.combine(url)
         hasher.combine(avatarUrl)
