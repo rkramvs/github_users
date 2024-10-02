@@ -25,6 +25,9 @@ class UserListViewController: UIViewController {
         return collectionView
     }()
     
+    var searchWorkItem: DispatchWorkItem?
+    private var searchController: UISearchController = UISearchController(searchResultsController: nil)
+    
     var loadingView: LoadingView?
     var viewModel: UserListViewModel
     
@@ -52,6 +55,9 @@ class UserListViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         viewModel.fetchUsers()
+        searchController.searchBar.delegate = self
+        searchController.searchBar.searchBarStyle = .minimal
+        navigationItem.searchController = searchController
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -88,7 +94,9 @@ class UserListViewController: UIViewController {
                 if let data = image?.jpegData(compressionQuality: 1.0) {
                     let context = CoreDataHelper.shared.bgContext
                     context.perform {
-                        try? UserMObject.updateAvatarData(login: login, avatarData: data, in: context)
+                        [CoreDataEntity.users, CoreDataEntity.usersSearch].forEach {
+                            try? UserMObject.updateAvatarData(login: login, avatarData: data, entity: $0, in: context)
+                        }
                     }
                    
                 }
@@ -109,7 +117,6 @@ class UserListViewController: UIViewController {
 //MARK: - UserLisViewModelDelegate
 
 extension UserListViewController: UserLisViewModelDelegate {
-    
 }
 
 //MARK: - UICollectionViewDelegate
@@ -144,5 +151,33 @@ extension UserListViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         let snapShot = snapshot as NSDiffableDataSourceSnapshot<Int, NSManagedObjectID>
         dataSource?.apply(snapShot)
+    }
+}
+
+//MARK: - UISearchBarDelegate
+extension UserListViewController: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        viewModel.searchActive = true
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        guard !searchText.isEmpty else {
+            searchWorkItem?.cancel()
+            return
+        }
+        
+        searchWorkItem?.cancel()
+        searchWorkItem = DispatchWorkItem(block: {
+            self.viewModel.searchUsers(searchText)
+        })
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: searchWorkItem!)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.searchActive = false
+        searchWorkItem?.cancel()
+        viewModel.searchCancelled()
     }
 }

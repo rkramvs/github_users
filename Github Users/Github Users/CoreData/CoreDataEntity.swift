@@ -6,7 +6,15 @@
 //
 
 import Foundation
+import CoreData
 
 enum CoreDataEntity: String {
-    case users = "Users", languageColor = "LanguageColor"
+    case users = "Users", languageColor = "LanguageColor", usersSearch = "UsersSearch"
 }
+
+extension CoreDataEntity {
+    func entityDescription(context: NSManagedObjectContext) -> NSEntityDescription? {
+        return NSEntityDescription.entity(forEntityName: rawValue, in: context)
+    }
+}
+ 

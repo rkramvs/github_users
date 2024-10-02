@@ -38,7 +38,6 @@ class UserDetailViewModel {
     
     init(user: UserListModel) {
         self.user = user
-        
         initiateTableSectionConstructor()
         computeTableSections()
     }

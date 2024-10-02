@@ -18,9 +18,9 @@ class UserMObject: NSManagedObject {
     @NSManaged var createdAt: Date?
     @NSManaged var bio: String?
     
-    static func getFRC() -> NSFetchedResultsController<UserMObject> {
+    static func getFRC(entity: CoreDataEntity) -> NSFetchedResultsController<UserMObject> {
         let context = CoreDataHelper.shared.mainContext
-        let fetchRequest: NSFetchRequest<UserMObject> = UserMObject.fetchRequest()
+        let fetchRequest: NSFetchRequest<UserMObject> = UserMObject.fetchRequest(entity: entity)
         let sortDescriptor = NSSortDescriptor(key: "\(#keyPath(UserMObject.databaseId))", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         fetchRequest.resultType = .managedObjectResultType
@@ -29,8 +29,8 @@ class UserMObject: NSManagedObject {
         return controller
     }
     
-    static func fetchRequest<T: NSFetchRequestResult>() -> NSFetchRequest<T> {
-        NSFetchRequest<T>(entityName: CoreDataEntity.users.rawValue)
+    static func fetchRequest<T: NSFetchRequestResult>(entity: CoreDataEntity) -> NSFetchRequest<T> {
+        NSFetchRequest<T>(entityName: entity.rawValue)
     }
     
     var listModel: UserListModel {
@@ -45,8 +45,9 @@ class UserMObject: NSManagedObject {
         return model
     }
     
-    static func insert(user: UserListModel, context: NSManagedObjectContext) throws {
-        let newUser = UserMObject(context: context)
+    static func insert(user: UserListModel, in entity: CoreDataEntity, context: NSManagedObjectContext) throws {
+        guard let entityDescription = entity.entityDescription(context: context) else { return }
+        let newUser = UserMObject(entity: entityDescription, insertInto: context)
         newUser.databaseId = user.databaseId
         newUser.login = user.login
         newUser.name = user.name
@@ -56,9 +57,9 @@ class UserMObject: NSManagedObject {
         newUser.createdAt = user.createdAt
     }
     
-    static func updateAvatarData(login: String, avatarData: Data?, in context: NSManagedObjectContext) throws {
+    static func updateAvatarData(login: String, avatarData: Data?, entity: CoreDataEntity, in context: NSManagedObjectContext) throws {
         
-        let fetchRequest: NSFetchRequest<UserMObject> = UserMObject.fetchRequest()
+        let fetchRequest: NSFetchRequest<UserMObject> = UserMObject.fetchRequest(entity: entity)
         fetchRequest.predicate = NSPredicate(format: "login == %@", login as NSString)
         let results = try context.fetch(fetchRequest)
         

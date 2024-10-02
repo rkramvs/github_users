@@ -19,4 +19,19 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="UsersSearch" representedClassName=".UserMObject" syncable="YES">
+        <attribute name="avatarData" optional="YES" attributeType="Binary" storedInTruthFile="YES"/>
+        <attribute name="avatarUrl" optional="YES" attributeType="URI"/>
+        <attribute name="bio" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="databaseId" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="login" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="URI"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="login"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
 </model>

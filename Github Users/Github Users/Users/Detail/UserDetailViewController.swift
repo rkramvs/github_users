@@ -16,6 +16,7 @@ class UserDetailViewController: UIViewController {
     typealias Section = UserDetailViewModel.Section.SectionType
     typealias Item = UserDetailViewModel.Section.Item
     var dataSource: UICollectionViewDiffableDataSource<Section, Item>?
+    weak var coordinatorDelegate: UserDetailCoordinatorDelegate?
     
     private lazy var collectionView: UICollectionView = {
         var config =  UICollectionViewCompositionalLayoutConfiguration()
@@ -116,7 +117,9 @@ class UserDetailViewController: UIViewController {
             ImageCache.publicCache.load(url: avatarUrl as NSURL, key: item.login) {login, image in
                 if let data = image?.jpegData(compressionQuality: 1.0) {
                     let context = CoreDataHelper.shared.bgContext
-                    try? UserMObject.updateAvatarData(login: login, avatarData: data, in: context)
+                    [CoreDataEntity.users, CoreDataEntity.usersSearch].forEach {
+                        try? UserMObject.updateAvatarData(login: login, avatarData: data, entity: $0, in: context)
+                    }
                 }
             }
         }
@@ -262,7 +265,7 @@ extension UserDetailViewController: UICollectionViewDelegate {
             
         case .repository(let repository):
             if let url = repository.htmlUrl {
-                UIApplication.shared.open(url)
+                coordinatorDelegate?.showRepository(name: repository.name, url: url, vc: self)
             }
         default:
             break
