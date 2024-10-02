@@ -39,6 +39,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Scripts/Localisation/LocalisationHandler.py,
 			);
 			target = F5C2D0022CA3F1C600F812E9 /* Github Users */;
 		};
@@ -130,6 +131,7 @@
 				F5C2CFFF2CA3F1C600F812E9 /* Sources */,
 				F5C2D0002CA3F1C600F812E9 /* Frameworks */,
 				F5C2D0012CA3F1C600F812E9 /* Resources */,
+				F5B1A33B2CAD636C00E1ABB8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -222,6 +224,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = F5C2CFFA2CA3F1C600F812E9;
 			minimizedProjectReferenceProxies = 1;
@@ -260,6 +263,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F5B1A33B2CAD636C00E1ABB8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# Type a script or drag a script file from your workspace to insert its path.\nif [ \"$SCHEME_NAME\" != \"Localisation\" ]; then\nscript_path=\"$SRCROOT/Github Users/Scripts/Localisation/LocalisationHandler.py\"\n\n# Check if the script file exists\nif [ -f \"$script_path\" ]; then\n    # Run the script\n    python3 \"$script_path\"\n    python_exit_code=$?\n\n    # Check the exit code and act accordingly\n    if [ $python_exit_code -eq 0 ]; then\n        echo \"Python script exited successfully.\"\n        exit 0  # You can exit the shell script with a success code (0) if the Python script succeeded.\n    else\n        echo \"Python script exited with an error code: $python_exit_code\"\n        exit $python_exit_code  # Exit the shell script with the same error code as the Python script.\n    fi\nelse\n    echo \"LocalizationHandler.sh script not found at $script_path\"\nfi\nelse\necho \"Skipping script for Release configuration.\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F5C2CFFF2CA3F1C600F812E9 /* Sources */ = {
@@ -309,6 +332,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QJ8GZ4R6AG;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Github Users/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GitPeek;
@@ -345,6 +369,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QJ8GZ4R6AG;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Github Users/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GitPeek;
@@ -430,6 +455,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -486,6 +512,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

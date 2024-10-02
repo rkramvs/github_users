@@ -12,6 +12,6 @@ extension GitHubRequestConvertible {
     var host: String { "api.github.com" }
     
     func token() async throws -> String {
-        return Bundle.main.infoDictionary?["Access Token"] as? String ?? ""
+        return Bundle.main.infoDictionary?["ACCESS_TOKEN"] as? String ?? ""
     }
 }

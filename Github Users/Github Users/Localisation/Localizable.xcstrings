@@ -1,0 +1,17 @@
+{
+    "sourceLanguage": "en",
+    "strings": {
+        "Users": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u30e6\u30fc\u30b6\u30fc"
+                    }
+                }
+            }
+        }
+    },
+    "version": "1.0"
+}
