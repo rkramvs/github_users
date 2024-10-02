@@ -120,6 +120,12 @@ class UserDetailViewModel {
         self.delegate?.reloadCollectionView(with: true)
     }
     
+    func update(avatarData: Data?) {
+        self.userDetailModel.avatarData = avatarData
+        self.computeTableSections()
+        self.delegate?.reloadCollectionView(with: true)
+    }
+    
 }
 
 //MARK: - CollectionViewSection

@@ -64,6 +64,8 @@ class RepositoryHeaderContentView: UIContentView & UIView {
         super.init(frame: .zero)
         
         backgroundColor = UIColor.systemBackground
+        layoutMargins.top = 16
+        layoutMargins.bottom = 12
     
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont.preferredFont(forTextStyle: .headline)

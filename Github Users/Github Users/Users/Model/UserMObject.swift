@@ -66,8 +66,6 @@ class UserMObject: NSManagedObject {
         if let entity = results.first {
             entity.avatarData = avatarData
             try context.save()
-        } else {
-            throw NSError(domain: "UserMObject", code: 404, userInfo: [NSLocalizedDescriptionKey: "Entity with login \(login) not found"])
         }
     }
 }

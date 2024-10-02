@@ -85,7 +85,6 @@ class UserProfileCellContentView: UIView, UIContentView {
         nameStackView.translatesAutoresizingMaskIntoConstraints = false
         nameStackView.axis = .vertical
         nameStackView.distribution = .fill
-        nameStackView.alignment = .leading
         nameStackView.spacing = 3
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -99,13 +98,11 @@ class UserProfileCellContentView: UIView, UIContentView {
         imageStackView.translatesAutoresizingMaskIntoConstraints = false
         imageStackView.axis = .horizontal
         imageStackView.distribution = .fill
-        imageStackView.alignment = .center
         imageStackView.spacing = 8
         
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
         verticalStackView.axis = .vertical
         verticalStackView.distribution = .fill
-        verticalStackView.alignment = .leading
         verticalStackView.spacing = 7
         
         addSubview(verticalStackView)

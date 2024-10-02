@@ -114,8 +114,10 @@ class UserDetailViewController: UIViewController {
             
             guard let avatarUrl = item.avatarUrl, item.avatarData == nil else { return }
 
-            ImageCache.publicCache.load(url: avatarUrl as NSURL, key: item.login) {login, image in
+            ImageCache.publicCache.load(url: avatarUrl as NSURL, key: item.login) {[weak self]login, image in
+                guard let self else { return }
                 if let data = image?.jpegData(compressionQuality: 1.0) {
+                    self.viewModel.update(avatarData: data)
                     let context = CoreDataHelper.shared.bgContext
                     [CoreDataEntity.users, CoreDataEntity.usersSearch].forEach {
                         try? UserMObject.updateAvatarData(login: login, avatarData: data, entity: $0, in: context)

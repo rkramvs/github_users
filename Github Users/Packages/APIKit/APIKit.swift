@@ -36,14 +36,27 @@ public struct APIKit {
     
     public static func downloadData(_ requestConvertible: RequestConvertible,
                                     session: URLSession) async throws -> Data {
+        
         let request = try await requestConvertible.request()
+        
+        var cacheKeyRequest: URLRequest?
+        if let urlRequest = request.url {
+            cacheKeyRequest = URLRequest(url: urlRequest)
+            if let cachedResponse = session.configuration.urlCache?.cachedResponse(for: cacheKeyRequest!) {
+                return cachedResponse.data
+            }
+        }
         
         #if DEBUG
         print("URL: \(request.url?.absoluteString ?? "")")
         #endif
         let (url, response) = try await session.download(for: request)
         if let httpResponse = (response as? HTTPURLResponse), httpResponse.statusCode == 200 {
-            return try Data(contentsOf: url)
+            let data = try Data(contentsOf: url)
+            if let cacheKeyRequest {
+                session.configuration.urlCache?.storeCachedResponse(CachedURLResponse(response: response, data: data), for: cacheKeyRequest)
+            }
+            return data
         }
         throw NetworkError.networkFailure
     }
