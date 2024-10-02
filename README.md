@@ -13,6 +13,11 @@ An iOS application that allows users to browse GitHub profiles and their reposit
   - Each repository can be tapped to view more details in a WebView.
 - **Localization Support**: The app supports both English and Japanese.
 
+## Minimum Requirements
+
+- **iOS Deployment Target**: 15.0 or later
+- **Swift Version**: 5.0 or later
+
 ## Technologies Used
 
 This project uses the following technologies:
@@ -24,6 +29,7 @@ This project uses the following technologies:
 - **URLCache**: Implemented for caching network responses to reduce loading times and minimize repeated network requests.
 - **NSCache**: Utilized to cache user profile pictures in memory, improving the performance of image loading and reducing flickering when scrolling through lists.
 - **GraphQL API**: Moved from the GitHub User list REST API to GraphQL to access extra data fields not available in REST. However, GraphQL returns results in random order with each app launch, which can cause the user list to rearrange when loading the next page.
+- **iPad Support**: The application is designed to be compatible with iPad devices, providing a user-friendly experience across various screen sizes.
 
 ### Additional Details
 
@@ -68,7 +74,7 @@ To keep your GitHub Personal Access Token secure and avoid accidental exposure, 
 
 - **Added an automated translation feature** using a Python script during the build phase to support English and Japanese.
 - **Used the `Translator` open-source Python package** to fetch and translate strings in localization files.
-- **Integrated the Python script into the Xcode build process** to ensure all user interface elements are translated with the latest updates.
+- **Integrated the Python script into the Xcode build phase** to ensure all user interface elements are translated with the latest updates.
 
 <img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A30%3A17.png?alt=media&token=365492ee-e9e0-4489-904c-3cd0aa437fa4" alt="iPhone User List" width="300" height="600">   <img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A39%3A49.png?alt=media&token=06bca10e-a69b-446f-a99f-d4009eb17b6a" alt="iPhone User List" width="300" height="600">
 
@@ -77,6 +83,9 @@ To keep your GitHub Personal Access Token secure and avoid accidental exposure, 
 
 #### Localisation
 <img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A56%3A44.png?alt=media&token=be4a4206-fda0-4789-870e-d05fe7a65d88" alt="iPhone User List" width="300" height="600">
+
+#### iPad
+<img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2021%3A28%3A02.png?alt=media&token=6e0a2a08-3cab-4117-919c-4dd6180ad8da" alt="iPhone User List" width="720" height="540">
 
 
 
