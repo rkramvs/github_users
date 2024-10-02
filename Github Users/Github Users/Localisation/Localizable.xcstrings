@@ -1,0 +1,116 @@
+{
+    "sourceLanguage": "en",
+    "strings": {
+        "All Repositories": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u3059\u3079\u3066\u306e\u30ea\u30dd\u30b8\u30c8\u30ea"
+                    }
+                }
+            }
+        },
+        "followers": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u30d5\u30a9\u30ed\u30ef\u30fc"
+                    }
+                }
+            }
+        },
+        "followings": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u30d5\u30a9\u30ed\u30fc"
+                    }
+                }
+            }
+        },
+        "Loading": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u8aad\u307f\u8fbc\u307f"
+                    }
+                }
+            }
+        },
+        "Non-Forked": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u30d5\u30a9\u30fc\u30af\u306a\u3057"
+                    }
+                }
+            }
+        },
+        "Public": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u516c\u5171"
+                    }
+                }
+            }
+        },
+        "Public Repositories": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u516c\u958b\u30ea\u30dd\u30b8\u30c8\u30ea"
+                    }
+                }
+            }
+        },
+        "Repository": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u30ea\u30dd\u30b8\u30c8\u30ea"
+                    }
+                }
+            }
+        },
+        "Show All": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u3059\u3079\u3066\u3092\u8868\u793a\u3057\u307e\u3059"
+                    }
+                }
+            }
+        },
+        "Users": {
+            "extractionState": "manual",
+            "localizations": {
+                "ja": {
+                    "stringUnit": {
+                        "state": "translated",
+                        "value": "\u30e6\u30fc\u30b6\u30fc"
+                    }
+                }
+            }
+        }
+    },
+    "version": "1.0"
+}

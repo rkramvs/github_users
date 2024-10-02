@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F5C2D0662CA3FEF100F812E9 /* GitHubRequest in Frameworks */ = {isa = PBXBuildFile; productRef = F5C2D0652CA3FEF100F812E9 /* GitHubRequest */; };
+		F5C2D0E52CA4170D00F812E9 /* UIComponent in Frameworks */ = {isa = PBXBuildFile; productRef = F5C2D0E42CA4170D00F812E9 /* UIComponent */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F5C2D01D2CA3F1C800F812E9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -34,6 +39,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Scripts/Localisation/LocalisationHandler.py,
 			);
 			target = F5C2D0022CA3F1C600F812E9 /* Github Users */;
 		};
@@ -65,6 +71,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5C2D0E52CA4170D00F812E9 /* UIComponent in Frameworks */,
+				F5C2D0662CA3FEF100F812E9 /* GitHubRequest in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +99,7 @@
 				F5C2D0052CA3F1C600F812E9 /* Github Users */,
 				F5C2D01F2CA3F1C800F812E9 /* Github UsersTests */,
 				F5C2D0292CA3F1C800F812E9 /* Github UsersUITests */,
+				F5C2D0642CA3FEF100F812E9 /* Frameworks */,
 				F5C2D0042CA3F1C600F812E9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -105,6 +114,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F5C2D0642CA3FEF100F812E9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -115,6 +131,7 @@
 				F5C2CFFF2CA3F1C600F812E9 /* Sources */,
 				F5C2D0002CA3F1C600F812E9 /* Frameworks */,
 				F5C2D0012CA3F1C600F812E9 /* Resources */,
+				F5B1A33B2CAD636C00E1ABB8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -125,6 +142,8 @@
 			);
 			name = "Github Users";
 			packageProductDependencies = (
+				F5C2D0652CA3FEF100F812E9 /* GitHubRequest */,
+				F5C2D0E42CA4170D00F812E9 /* UIComponent */,
 			);
 			productName = "Github Users";
 			productReference = F5C2D0032CA3F1C600F812E9 /* Github Users.app */;
@@ -205,6 +224,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = F5C2CFFA2CA3F1C600F812E9;
 			minimizedProjectReferenceProxies = 1;
@@ -243,6 +263,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F5B1A33B2CAD636C00E1ABB8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# Type a script or drag a script file from your workspace to insert its path.\nif [ \"$SCHEME_NAME\" != \"Localisation\" ]; then\nscript_path=\"$SRCROOT/Github Users/Scripts/Localisation/LocalisationHandler.py\"\n\n# Check if the script file exists\nif [ -f \"$script_path\" ]; then\n    # Run the script\n    python3 \"$script_path\"\n    python_exit_code=$?\n\n    # Check the exit code and act accordingly\n    if [ $python_exit_code -eq 0 ]; then\n        echo \"Python script exited successfully.\"\n        exit 0  # You can exit the shell script with a success code (0) if the Python script succeeded.\n    else\n        echo \"Python script exited with an error code: $python_exit_code\"\n        exit $python_exit_code  # Exit the shell script with the same error code as the Python script.\n    fi\nelse\n    echo \"LocalizationHandler.sh script not found at $script_path\"\nfi\nelse\necho \"Skipping script for Release configuration.\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F5C2CFFF2CA3F1C600F812E9 /* Sources */ = {
@@ -284,19 +324,21 @@
 /* Begin XCBuildConfiguration section */
 		F5C2D0302CA3F1C800F812E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F5C2D0052CA3F1C600F812E9 /* Github Users */;
+			baseConfigurationReferenceRelativePath = Config/Config.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QJ8GZ4R6AG;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Github Users/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "GitHub Users";
+				INFOPLIST_KEY_CFBundleDisplayName = GitPeek;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
@@ -319,19 +361,21 @@
 		};
 		F5C2D0312CA3F1C800F812E9 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F5C2D0052CA3F1C600F812E9 /* Github Users */;
+			baseConfigurationReferenceRelativePath = Config/Config.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QJ8GZ4R6AG;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Github Users/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "GitHub Users";
+				INFOPLIST_KEY_CFBundleDisplayName = GitPeek;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
@@ -411,6 +455,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -467,6 +512,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -601,6 +647,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F5C2D0652CA3FEF100F812E9 /* GitHubRequest */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitHubRequest;
+		};
+		F5C2D0E42CA4170D00F812E9 /* UIComponent */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UIComponent;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F5C2CFFB2CA3F1C600F812E9 /* Project object */;
 }
