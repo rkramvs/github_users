@@ -7,4 +7,7 @@
    <FileRef
       location = "container:Github Users.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:Github UsersTests/Github UsersTests.xctestplan">
+   </FileRef>
 </Workspace>

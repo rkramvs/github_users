@@ -109,6 +109,8 @@ class UserListCellContentView: UIView, UIContentView {
         bioLabel.isHidden = configuration.model.bio == nil
         if let data = configuration.model.avatarData {
             imageView.image = UIImage(data: data)
+        } else {
+            imageView.image = UIImage(systemName: "person.circle.fill")
         }
     }
 }

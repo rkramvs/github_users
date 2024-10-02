@@ -121,9 +121,9 @@ class UserDetailCellContentView: UIView, UIContentView {
         textLabel.text = configuration.title
         
         if configuration.isTappable {
-            textLabel.font = UIFont.boldSystemFont(ofSize: 16)
+            textLabel.textColor = .accent
         } else {
-            textLabel.font = UIFont.systemFont(ofSize: 16)
+            textLabel.textColor = .label
         }
     }
 }
