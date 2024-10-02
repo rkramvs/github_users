@@ -20,8 +20,7 @@ protocol UserDetailCoordinatorDelegate: AnyObject {
 
 class UserCoordinator {
     private let window: UIWindow?
-    private let navigationController = UINavigationController()
-//    private var listVc: UserListViewController?
+    let splitViewController = UISplitViewController(style: .doubleColumn)
     
     public init(window: UIWindow?) {
         self.window = window
@@ -30,9 +29,20 @@ class UserCoordinator {
     func showList() {
         let listVc = UserListViewController(viewModel: UserListViewModel())
         listVc.coordinatorDelegate =  self
-        navigationController.viewControllers = [listVc]
-        window?.rootViewController = navigationController
+        let listNavigationController = UINavigationController()
+        listNavigationController.viewControllers = [listVc]
+        
+        let emptyDetailVC = UIViewController()
+        emptyDetailVC.view.backgroundColor = .systemBackground
+        
+        let detailNavigationController = UINavigationController()
+        detailNavigationController.viewControllers = [emptyDetailVC]
+        
+        splitViewController.viewControllers = [listVc, detailNavigationController]
+        
+        window?.rootViewController = splitViewController
         window?.makeKeyAndVisible()
+        splitViewController.show(.primary)
     }
 }
 
@@ -42,7 +52,9 @@ extension UserCoordinator: UserListCoordinatorDelegate {
     func showUserDetails(for user: UserListModel) {
         let detailVc = UserDetailViewController(viewModel: UserDetailViewModel(user: user))
         detailVc.coordinatorDelegate = self
-        navigationController.pushViewController(detailVc, animated: true)
+        let detailNavigationController = UINavigationController()
+        detailNavigationController.viewControllers = [detailVc]
+        splitViewController.showDetailViewController(detailNavigationController, sender: nil)
     }
 }
 
