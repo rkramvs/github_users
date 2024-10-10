@@ -70,11 +70,28 @@ To keep your GitHub Personal Access Token secure and avoid accidental exposure, 
     Github Users/Config/Config.xcconfig
     ```
 
-### Auto-Translation for Localization
+## Auto-Translation for Localization
 
-- **Added an automated translation feature** using a Python script during the build phase to support English and Japanese.
-- **Used the `Translator` open-source Python package** to fetch and translate strings in localization files.
-- **Integrated the Python script into the Xcode build phase** to ensure all user interface elements are translated with the latest updates.
+This project includes an automated translation feature that uses a Python script to support English and Japanese languages. The script leverages the `Translator` open-source Python package to fetch and translate strings in the localization files.
+
+**Important:**  
+The auto-translation script only runs when the **Localization** build configuration is selected. If you’re working in another build configuration (e.g., Debug, Release), the script will not execute.
+
+### How It Works:
+
+1. **Python Script Integration**:  
+   The Python script is integrated into the Xcode build phase to automatically translate any updated user interface elements.
+   
+2. **Supported Languages**:  
+   Currently, the auto-translation feature supports translating strings to English and Japanese.
+   
+3. **Build Configuration Dependency**:  
+   To trigger the auto-translation, ensure you are using the **Localization** build configuration. This is specifically set up for translation purposes and ensures the latest updates are automatically reflected in the UI elements.
+
+### Steps to Use:
+
+- To enable auto-translation, select the **Localization** build configuration in Xcode.
+- The script will run during the build process, translating any new or updated strings for the user interface into the supported languages.
 
 <img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A30%3A17.png?alt=media&token=365492ee-e9e0-4489-904c-3cd0aa437fa4" alt="iPhone User List" width="300" height="600">   <img src="https://firebasestorage.googleapis.com/v0/b/profile-3b7ca.appspot.com/o/Wednesday%2C%2002%20Oct%202024%2020%3A39%3A49.png?alt=media&token=06bca10e-a69b-446f-a99f-d4009eb17b6a" alt="iPhone User List" width="300" height="600">
 
